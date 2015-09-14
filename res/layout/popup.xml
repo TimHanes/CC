@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+	android:gravity="center"
+	>
+	<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center"
+		android:background="@drawable/cell_shape"
+	>
+	<ProgressBar 
+		android:id="@+id/mbpbar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:indeterminate="true"
+		android:visibility="gone"
+	/>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="center"
+	>
+	<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:gravity="center"
+	android:background="@drawable/cell_shape"
+	>
+    <TextView
+        android:id="@+id/mbtext1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:textSize="10pt"
+		android:gravity="center"
+		android:text="title"
+		android:visibility="gone"
+	
+        />
+	<EditText
+		android:id="@+id/mbedit1"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:visibility="gone"
+	/>
+	</LinearLayout>
+	<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="center"
+		android:background="@drawable/cell_shape"
+		>
+	<TextView
+        android:id="@+id/mbtext2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:textSize="10pt"
+		android:text="text"
+		android:gravity="center"
+		android:visibility="gone"
+	/>
+	<EditText
+		android:id="@+id/mbedit2"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:visibility="gone"
+	/>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		android:gravity="center"
+	>
+		<Button
+			android:id="@+id/mbbtn1"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="YES"
+			android:gravity="center"
+			android:layout_weight="1"
+			android:visibility="gone"
+		/>
+		<Button
+			android:id="@+id/mbbtn2"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="NO"
+			android:gravity="center"
+			android:layout_weight="1"
+			android:visibility="gone"
+		/>
+		<Button
+			android:id="@+id/mbbtn3"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="CANCEL"
+			android:gravity="center"
+			android:layout_weight="1"
+			android:visibility="gone"
+		/>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		android:gravity="center"
+		>
+	<CheckBox
+		android:id="@+id/checksave"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:visibility ="gone"
+	/>
+	<TextView
+		android:id="@+id/chvsave"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="-for all"
+		android:visibility ="gone"
+	/>
+	</LinearLayout>
+</LinearLayout>
+</LinearLayout>
+	
+</RelativeLayout>

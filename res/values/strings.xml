@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="f_prompt">Select function</string>
+    <string name="app_name">ContactCleaner</string>
+	<string-array name = "f_array" >
+		<item>and</item>
+		<item>or</item>
+	</string-array>
+</resources>
