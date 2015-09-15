@@ -1,230 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"  
-	android:background="@drawable/cell_shape"
->
-<LinearLayout 
+    android:id="@+id/ltrel"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" 
-	android:gravity="center"
-	android:background="@drawable/cell_shape"
-	>
-
-    <TextView
-		android:id= "@+id/title"
+    android:layout_height="fill_parent">
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Contact cleaner"
-		android:textSize="14pt"
-		android:gravity="center"
-		android:background="@drawable/cell_shape"
-		/>
-
-	<LinearLayout 
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical" 
-		
-		android:background="@drawable/cell_shape"
-	>
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal" 
-			android:layout_marginLeft="50dip"
-		>
-	<CheckBox
-		android:id="@+id/byname"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:visibility ="visible"
-	/>
-	<TextView
-		android:id="@+id/vbyname"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="-search double name"
-	/>
-		</LinearLayout>
-		<!--Spinner
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact cleaner"
+            android:textSize="14pt"
+            android:gravity="center" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="50dip">
+                <CheckBox
+                    android:id="@+id/byname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+                <TextView
+                    android:id="@+id/vbyname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-search double name" />
+            </LinearLayout>
+        <!--Spinner
 			android:id = "@+id/spinner1"
 			android:layout_width ="match_parent"
 			android:layout_height = "wrap_content"
 			android:entries= "@array/country_arrays"
 			android:prompt = "@string/country_prompt" /-->
-		<Spinner
-			android:id = "@+id/spinner"
-			android:layout_width ="wrap_content"
-			android:layout_height = "wrap_content" 
-			android:entries= "@array/f_array"
-			android:prompt = "@string/f_prompt" 
-			android:layout_marginLeft="50dip"
-			/>
-		
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal" 
-			android:layout_marginLeft="50dip"
-		>
-	<CheckBox
-		android:id="@+id/byphone"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:visibility ="visible"
-	/>
-	<TextView
-		android:id="@+id/vbyphone"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="-serch double phone"
-	/>
-		</LinearLayout>
-		<LinearLayout 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal" 
-			android:layout_marginLeft="50dip"
-		>
-	<CheckBox
-		android:id="@+id/advanced"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:visibility ="visible"
-	/>
-	<TextView
-		android:id="@+id/vadv"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="-advanced search"
-	/>
-		</LinearLayout>
-		</LinearLayout>
-
-	<ScrollView
-		android:id="@+id/vScrollView"
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:fillViewport="true"
-		android:layout_marginBottom="50dip"
-		android:background="@drawable/cell_shape"
-		>
-		<TextView
-			android:id= "@+id/tv"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:textSize="10pt"
-			android:gravity="center"
-		/>
-	</ScrollView>
-
-</LinearLayout>
-	<Button
-		android:id="@+id/btn"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="START SCAN"
-		android:gravity="center"
-		android:onClick="bstart"
-		android:layout_alignParentBottom="true"
-	/>
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dip" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="50dip">
+                <CheckBox
+                    android:id="@+id/byphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+                <TextView
+                    android:id="@+id/vbyphone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-serch double phone" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="50dip">
+                <CheckBox
+                    android:id="@+id/advanced"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+                <TextView
+                    android:id="@+id/vadv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-advanced search" />
+            </LinearLayout>
+        </LinearLayout>
+        <ScrollView
+            android:id="@+id/vScrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:fillViewport="true"
+            android:layout_marginBottom="50dip"
+            android:minWidth="25px"
+            android:minHeight="25px">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/tv" />
+        </ScrollView>
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="START SCAN"
+        android:gravity="center"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>
-	
-<!--LinearLayout
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
-android:background="@drawable/cell_shape"
->
-<RadioGroup
-android:id = "@+id/radioNow"
-android:layout_width = "fill_parent"
-android:layout_height = "wrap_content"
-android:orientation="horizontal"
-android:gravity="center"
->
-<RadioButton
-android:id="@+id/dayNow"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:text="consolidate"
-android:gravity="center"
-android:layout_weight="1"
-/>
-<RadioButton
-android:id="@+id/nightNow"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:text="delete"
-android:gravity="center"
-android:layout_weight="1"
-/>
-<RadioButton
-android:id="@+id/afternightNow"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:text="After Night"
-android:gravity="center"
-android:layout_weight="1"
-/>
-<RadioButton
-android:id="@+id/freedayNow"
-android:layout_width="fill_parent"
-android:layout_height="wrap_content"
-android:text="Free Day"
-android:gravity="center"
-android:layout_weight="1"
-/>
-</RadioGroup>
-<CheckBox
-android:id="@+id/checkname"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:visibility ="visible"
-/>
-<TextView
-android:id="@+id/chvname"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="-check name"
-/>
-<CheckBox
-android:id="@+id/checkphone"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:visibility ="visible"
-/>
-<TextView
-android:id="@+id/chvphone"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="-check phone"
-/>
-<CheckBox
-android:id="@+id/checkcon"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:visibility ="visible"
-/>
-<TextView
-android:id="@+id/chvcon"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="-consolidate"
-/>
-<CheckBox
-android:id="@+id/checkask"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:visibility ="visible"
-/>
-<TextView
-android:id="@+id/chvask"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="-ask me"
-/>
-
-</LinearLayout-->

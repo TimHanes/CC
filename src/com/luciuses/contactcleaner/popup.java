@@ -4,9 +4,10 @@ package com.luciuses.contactcleaner;
 import android.app.*;
 import android.util.*;
 import android.view.*;
+import android.view.View.OnClickListener;
 import android.widget.*;
 
-public class popup
+public class Popup
 {
 	public Dialog dialog;
 	public Activity activity;
@@ -20,7 +21,7 @@ public class popup
 	public ProgressBar pb;
 	public CheckBox chbsave;
 	public TextView chvsave;
-	popup (Activity iactivity)
+	Popup (Activity iactivity)
 	{
 		activity=iactivity;
 		dialog = new Dialog(activity);
@@ -272,7 +273,7 @@ public class popup
 			Log.d("xxx",err.getMessage());
 		}
 	}
-	public void MsgBoxProgress(String title,String msg,boolean horizontal)
+	public void MsgBoxProgress(String title,String msg,boolean horizontal, int arg1, int arg2, OnClickListener cancel)
 	{
 		invisible();
 		dialog.setTitle(title);
