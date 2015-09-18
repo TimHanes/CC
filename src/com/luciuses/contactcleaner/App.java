@@ -14,7 +14,7 @@ import android.widget.*;
 		public Popup Popup ;
 		public Context AppContext;
 
-		App()
+		App() 
 		{}
 
 //		private App()

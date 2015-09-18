@@ -1,13 +1,10 @@
 package com.luciuses.contactcleaner;
 
+import android.net.Uri;
 import android.os.*;
 import android.view.View;
 import android.view.View.*;
 import android.widget.*;
-import android.app.*;
-import android.content.*;
-import java.text.*;
-
 
 	public class MessageHandler extends Handler
 	{
@@ -49,6 +46,8 @@ import java.text.*;
 			case SetProgressBar:
 				SetProgressBar(msg);
 				break;
+			default:
+				break;
 			}
 		}
 
@@ -69,9 +68,9 @@ import java.text.*;
 			View.OnClickListener cancel = new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {					
-					_contactsHandler.Pause();
-					Finally();
-				}
+					_contactsHandler.OnFinished();
+					Finally();					
+				}				
 			};
 			
 			App.Instance().Popup.MsgBoxProgress("Processing...",msg.obj.toString(),true, msg.arg1, msg.arg2, cancel);
@@ -98,8 +97,7 @@ import java.text.*;
 				// TODO Auto-generated method stub
 				if (_flagClickButtons){
 					App.Instance().Popup.MsgBoxClose();
-					_contactsHandler.ContactDelete(
-						_contactsHandler.FoundUri()[_contactsHandler.CurrentContactIndex()]);
+//					_contactsHandler.ContactDelete();
 						_contactsHandler.Resume();
 						_flagClickButtons = !_flagClickButtons;
 				}
@@ -115,8 +113,7 @@ import java.text.*;
 					if (_flagClickButtons){
 
 					App.Instance().Popup.MsgBoxClose();
-					_contactsHandler.ContactJoin (
-						_contactsHandler.FoundUri() [_contactsHandler.CurrentContactIndex()]);
+//					_contactsHandler.ContactJoin ();
 					_contactsHandler.Resume();
 						_flagClickButtons = !_flagClickButtons;
 					}
@@ -140,5 +137,6 @@ import java.text.*;
 			};
 			App.Instance().Popup.MsgBoxButtons ("What do with:", msg.obj.toString () + " ?", "Delete", "Join", "Ignore", _onButtonDelete, _onButtonJoin, _onButtonIgnore, true);
 		}
+				
 	}
 

@@ -1,9 +1,10 @@
 package com.luciuses.contactcleaner;
 
 import android.os.*;
+
+import java.util.ArrayList;
+
 import android.content.*;
-import android.app.*;
-import android.widget.*;
 import android.database.*;
 import android.provider.*;
 import android.util.*;
@@ -11,31 +12,23 @@ import android.net.*;
 
 public class ContactsHandler extends BaseThread
 	{
-		private Uri[] foundUri;
-		private int currentContactIndex;
+				
 		private boolean _mFinished = false;
-		Context _context = App.Instance().AppContext;		
+		private Context _context = App.Instance().AppContext;		
 		private MessageHandler _mhandler;
-		ActionType _defaultAction = ActionType.None;
+		private ActionType _defaultAction = ActionType.None;
+		private DbProvider dbProvider = new DbProvider(_context);
 
 		public ContactsHandler()
 		{
 			_mhandler = new MessageHandler(this);			
 		}
 		
-		class SomeClass {
-		      private int someProperty;  
-		      public int getSomeProperty() {return someProperty;}
-		      public void setSomeProperty(int newProperty){someProperty = newProperty;}
+		public DbProvider getDbProvider(){
+			
+			return dbProvider;			
 		}
 		
-		public int CurrentContactIndex() { 						
-				return currentContactIndex;
-		}
-
-		public Uri[] FoundUri() { 				
-				return	foundUri;			
-		}
 
 		@Override
 		public void run()
@@ -45,101 +38,126 @@ public class ContactsHandler extends BaseThread
 
 			Cursor cur = _context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
-			cur.moveToFirst ();
+			cur.moveToFirst ();			
 								
 			while (cur.moveToNext () && !_mFinished) 
 			{
-				SearchDublicate (cur, options);
+				DublicatesOfContact dublsOfCont = SearchDublicate (cur, options);
+				if (dublsOfCont != null){
+					dbProvider.Save(dublsOfCont);
+				}	
 				super.run();
 			}
-	
+			ShowResult(dbProvider);
 			Message.obtain(_mhandler,MessageType.Finally.ordinal()).sendToTarget();
 
 		}	
 
-		private void SearchDublicate (Cursor cur, Options options)
+		private DublicatesOfContact SearchDublicate (Cursor cur, Options options)
 		{
-			
 
 			DisplayInfo (cur);
 
-			if ((options.ByName) & (options.ByPhone)) {
-				CheckByNameAndPhone ( cur);
-				return;
+			if ((options.ByName) & (options.ByPhone)) {				
+				return CheckByNameAndPhone ( cur);
 			}
 
 			if (options.ByName) {
-				CheckByName ( cur);
-				return;
+				
+				return CheckByName ( cur);
 			}
 				
 			if (options.ByPhone) {
-				CheckByPhone ( cur);
+				return CheckByPhone ( cur);
 			}
+			return null;
 		}
 
-		private void CheckByPhone(Cursor cur)
-		{
-			Contact contact = new Contact (cur);
+		private DublicatesOfContact CheckByPhone(Cursor cur)
+		{		
+			Uri[] chConUriByPhone = null;
 			try {
 				String[] phones = PhonesByCursor (cur).split ("\r\n");
 				for (int p = 0; p < phones.length; p++) {
-					foundUri = GetContactUrisByPhone (phones [p]);
+				Uri[] foundUri = GetContactUrisByPhone (phones [p]);
 					if (foundUri != null)
-						CheckContacts ( cur);
+						chConUriByPhone = CheckContacts ( cur, foundUri);
 				}
 			}
 			catch (Exception err) {
 				Log.e ("byphones", err.getMessage());
 			}
+			if (chConUriByPhone == null ) return null;
+			return new DublicatesOfContact(UriByCursor(cur), null, chConUriByPhone);
 		}
 
-		private void CheckByName( Cursor cur)
+		private DublicatesOfContact CheckByName( Cursor cur)
 		{
 			Contact contact = new Contact (cur);
-			foundUri = GetContactsUriByName (contact.Name, false);
-			CheckContacts (cur);
+			Uri[] foundUri = GetContactsUriByName (contact.getName(), false);
+			Uri[] chConUriByName = CheckContacts (cur, foundUri);
+			if (chConUriByName == null ) return null;
+			return new DublicatesOfContact(UriByCursor(cur), chConUriByName, null);
 		}
 
-		private void CheckByNameAndPhone( Cursor cur)
+		private DublicatesOfContact CheckByNameAndPhone( Cursor cur)
 		{
-			Contact contact = new Contact (cur);
-			foundUri = GetContactsUriByName (contact.Name, false);
-			CheckContacts ( cur);
+			Uri[] chConUriByPhone = null;
+			Contact contact = new Contact (cur);		
+			Uri[] foundUriByName = GetContactsUriByName (contact.getName(), false);
+			Uri[] chConUriByName = CheckContacts (cur, foundUriByName );
 			String[] phones = PhonesByCursor (cur).split ("\r\n");
 			for (int p = 0; p < phones.length; p++) {
-				foundUri = GetContactUrisByPhone (phones [p]);
-				CheckContacts (cur);
+				Uri[]	foundUriByPhone = GetContactUrisByPhone (phones [p]);
+			chConUriByPhone =	CheckContacts (cur, foundUriByPhone);
 			}
+			 if((chConUriByName == null)&(chConUriByPhone == null)){
+				 return null;
+			 }
+			return new DublicatesOfContact(UriByCursor(cur), chConUriByName, chConUriByPhone);
 		}
 
 		private void DisplayInfo (Cursor cur)
 		{
 			Contact contact = new Contact (cur);
-			Message.obtain (_mhandler, MessageType.SetTextToLogView.ordinal(), "work with:" + contact.Id + "-" + contact.Name + "\r\n").sendToTarget ();
-			Message.obtain (_mhandler, MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.Name + "\r\n" + ((_defaultAction == ActionType.None) ? "" : "(default:" + _defaultAction.toString () + ")")).sendToTarget ();
+			Message.obtain (_mhandler, MessageType.SetTextToLogView.ordinal(), "work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget ();
+			Message.obtain (_mhandler, MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.getName() + "\r\n" + ((_defaultAction == ActionType.None) ? "" : "(default:" + _defaultAction.toString () + ")")).sendToTarget ();
 		}
  
 			
-		private void CheckContacts(Cursor cur)
+		private Uri[] CheckContacts(Cursor cur, Uri[] foundUri)
 		{
-			Contact contact = new Contact (cur);
-			if (foundUri != null) {
-				for ( currentContactIndex = 0; currentContactIndex <= foundUri.length - 1; currentContactIndex++) {
-					CompaireContact(cur);	
+			ArrayList<Uri> contactsUri = new ArrayList<Uri>();
+			if ( foundUri != null) {
+				for ( int currentContactIndex = 0; currentContactIndex <= foundUri.length - 1; currentContactIndex++) {
+					if (CompaireContact(cur, foundUri[currentContactIndex])){
+						contactsUri.add(foundUri[currentContactIndex]);
+					};	
 				}
 			}
+			if (contactsUri.isEmpty()){
+				return null;
+			}
+			Object[] contUriArrObj = contactsUri.toArray();
+			Uri[] contUriArrUri = new Uri[contUriArrObj.length];
+			for (int i = 0; i < contUriArrObj.length; i++){
+				contUriArrUri[i] = (Uri)contUriArrObj[i];
+			}
+			return contUriArrUri;
+			
 		}		
 
-		private void CompaireContact( Cursor cur)
+		private boolean CompaireContact( Cursor cur, Uri uri)
 		{
 			Contact contact = new Contact (cur);
-			int fid = IdByUri (foundUri [currentContactIndex]);
-			if (fid > contact.Id) {
-				String fname = NameByUri (foundUri [currentContactIndex]);
+			int fid = IdByUri (uri);
+			if (fid > contact.getId()) {
+				String fname = NameByUri (uri);
 				Message.obtain (_mhandler, MessageType.AddToLogView.ordinal(), "find:" + fid + "-" + fname + "\r\n").sendToTarget ();//append to tv
 				if (!App.Instance().Popup.chbsave.isChecked()) {
-					Message.obtain (_mhandler, MessageType.ShowPopupForChooseAction.ordinal(), "Work with:" + contact.Name + "\r\n" + PhonesByCursor (cur) + "find:" + fname + "\r\n" + PhonesByUri (foundUri [currentContactIndex])).sendToTarget ();//
+					Message.obtain (_mhandler, MessageType.ShowPopupForChooseAction.ordinal(), contact.getId(), fid, "Work with:" + contact.getName() + "\r\n" + PhonesByCursor (cur) + "find:" + fname + "\r\n" + PhonesByUri (uri)).sendToTarget ();//
+					
+					
 					this.Pause();
 					super.run();
 				} else {
@@ -148,18 +166,19 @@ public class ContactsHandler extends BaseThread
 					case None:
 						break;
 					case Delete:
-						ContactDelete(foundUri[currentContactIndex]);
+						ContactDelete(uri);
 						break;
 					case Join:
-						ContactJoin(foundUri[currentContactIndex]);
+						ContactJoin(uri);
 						break;
 					case Ignore:
 						break;
 					}
 
 				}
-
+				return true;
 			}
+			return false;
 		}
 
 		public String PhonesByUri(Uri uri)
@@ -241,8 +260,7 @@ public class ContactsHandler extends BaseThread
 				if (cur.moveToFirst ()) {
 					int c = 0;
 					do {
-						String lookupKey = cur.getString (cur.getColumnIndex (ContactsContract.Contacts.LOOKUP_KEY));
-						Uri uri = Uri.withAppendedPath (ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+						Uri uri = UriByCursor(cur);
 						contactsUri [c] = uri;
 						c++;
 					} while(cur.moveToNext ());
@@ -252,7 +270,13 @@ public class ContactsHandler extends BaseThread
 		}
 	
 
-		 public int IdByUri(Uri uri)
+		 private Uri UriByCursor(Cursor cur) {
+			 String lookupKey = cur.getString (cur.getColumnIndex (ContactsContract.Contacts.LOOKUP_KEY));
+				Uri uri = Uri.withAppendedPath (ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+			return uri;
+		}
+
+		public int IdByUri(Uri uri)
 		{
 			 Cursor cur =_context.getContentResolver().query(uri,null,null,null,null);
 			cur.moveToFirst();
@@ -265,7 +289,7 @@ public class ContactsHandler extends BaseThread
 			cur.moveToFirst();
 			return cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 		}
-
+		
 		public Uri[] GetContactUrisByPhone(String phone)
 		{
 					Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
@@ -302,7 +326,21 @@ public class ContactsHandler extends BaseThread
 		
 		}
 
-		
+		public void ShowResult(DbProvider dbProvider){
+			
+			Uri[] uris = dbProvider.getContactsUri();
+			for (int i =0; i< uris.length; i++){				
+				DublicatesOfContact dubl = dbProvider.Read(uris[i]);			
+				Message.obtain (_mhandler, MessageType.AddToLogView.ordinal(), "Name:" + NameByUri(uris[i]) + "-"+ "\r\n").sendToTarget ();
+				for (int a =0; a< dubl.getUriDublicatesByName().length; a++){
+					Uri uri = dubl.getUriDublicatesByName()[a];
+					if(uri != null) Message.obtain (_mhandler, MessageType.AddToLogView.ordinal(), "DablName:" + NameByUri(uri) + "-"+ "\r\n").sendToTarget ();						
+				}
+				
+			}
+			
+			
+		}
 
 	} 
 

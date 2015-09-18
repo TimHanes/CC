@@ -280,7 +280,9 @@ public class Popup
 		txt1.setVisibility(View.VISIBLE);
 		txt1.setText(msg);
 		pb.setVisibility(View.VISIBLE);
-		
+		btn1.setVisibility(View.VISIBLE);
+		btn1.setText("CANCEL");
+		btn1.setOnClickListener(cancel);
 		try
 		{
 			dialog.show();
