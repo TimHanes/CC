@@ -9,7 +9,7 @@ import android.util.Log;
 public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
  
  
-    public static final String DATABASE_TABLE = "UriDublicatesOfContact";
+    public final static String DATABASE_TABLE = "UriDublicatesOfContact";
  
     public static final String CONTACT_URI = "contactUri";
     public static final String URI_DUBLICATES_BY_NAME = "uriDublicatesByName";
@@ -30,9 +30,7 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
 
     public DbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory,
                           int version) {
-        super(context, name, factory, version);
-        
-       
+        super(context, name, factory, version);              
     }  
 
     @Override

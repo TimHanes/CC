@@ -1,6 +1,5 @@
 package com.luciuses.contactcleaner;
 
-import android.net.Uri;
 import android.os.*;
 import android.view.View;
 import android.view.View.*;
@@ -8,20 +7,16 @@ import android.widget.*;
 
 	public class MessageHandler extends Handler
 	{
-		private TextView _logView;
-		private ContactsHandler _contactsHandler;
-		View.OnClickListener _onButtonJoin;
-		View.OnClickListener _onButtonIgnore;
-		View.OnClickListener _onButtonDelete;
+		private TextView _logView;				
 		private boolean _flagClickButtons;
-
-		public MessageHandler(ContactsHandler contactsHandler)
-		{
-			_contactsHandler = contactsHandler;
-			_logView = (TextView)App.Instance().RelativeLayout.findViewById(R.id.tv);
-			App.Instance().Popup.invisible ();
+		private ContactsProvider _contactsProvider;
+				
+		public MessageHandler(TextView logView)
+		{			
+			_contactsProvider = new ContactsProvider();
+			_logView = logView;			
 		}
-
+		
 		@Override 
 		public void handleMessage(Message msg)
 		{
@@ -46,9 +41,16 @@ import android.widget.*;
 			case SetProgressBar:
 				SetProgressBar(msg);
 				break;
+			case ShowListView:
+				ShowListView(msg);
+				break;
 			default:
 				break;
 			}
+		}
+
+		private void ShowListView(Message msg) {
+			
 		}
 
 		private void SetProgressBar(Message msg)
@@ -60,15 +62,14 @@ import android.widget.*;
 		private void Finally()
 		{
 			App.Instance().Popup.MsgBoxClose ();
-//			App.Instance.ProgressShower.Dismiss ();
 		}
 
 		private void ShowProgress(Message msg)
 		{
 			View.OnClickListener cancel = new View.OnClickListener() {
 				@Override
-				public void onClick(View v) {					
-					_contactsHandler.OnFinished();
+				public void onClick(View v) {
+					App.Instance().contactsHandler.OnFinished();					
 					Finally();					
 				}				
 			};
@@ -78,27 +79,27 @@ import android.widget.*;
 
 		private void SetTextToLogView(Message msg)
 		{
-			_logView.setText (msg.obj.toString (), TextView.BufferType.NORMAL);
+//			_logView.setText (msg.obj.toString (), TextView.BufferType.NORMAL);
 		}
 
 		private void AddToLogView(Message msg)
 		{
-			_logView.append (msg.obj.toString ());
+//			_logView.append (msg.obj.toString ());
 		}
 
 
-		private void ShowPopupForChooseAction(Message msg)
+		private void ShowPopupForChooseAction( Message msg)
 		{
 			_flagClickButtons = true;
-
+			final int contactId = msg.arg2;
 			OnClickListener _onButtonDelete = new OnClickListener() { 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (_flagClickButtons){
 					App.Instance().Popup.MsgBoxClose();
-//					_contactsHandler.ContactDelete();
-						_contactsHandler.Resume();
+					_contactsProvider.ContactDelete(contactId);
+					
 						_flagClickButtons = !_flagClickButtons;
 				}
 			}
@@ -113,8 +114,8 @@ import android.widget.*;
 					if (_flagClickButtons){
 
 					App.Instance().Popup.MsgBoxClose();
-//					_contactsHandler.ContactJoin ();
-					_contactsHandler.Resume();
+					_contactsProvider.ContactJoin (contactId);
+					
 						_flagClickButtons = !_flagClickButtons;
 					}
 				} 							
@@ -127,9 +128,8 @@ import android.widget.*;
 					// TODO Auto-generated method stub
 					if (_flagClickButtons){
 
-						App.Instance().Popup.MsgBoxClose();
-						_contactsHandler.ContactIgnore();
-							_contactsHandler.Resume();
+						App.Instance().Popup.MsgBoxClose();						
+							
 							_flagClickButtons = !_flagClickButtons;
 						}
 				}

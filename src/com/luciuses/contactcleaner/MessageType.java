@@ -8,5 +8,6 @@ public enum MessageType
 		SetTextToLogView,
 		ShowProgress,
 		Finally,
-		SetProgressBar
+		SetProgressBar,
+		ShowListView
 	}

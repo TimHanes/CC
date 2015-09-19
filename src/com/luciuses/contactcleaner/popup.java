@@ -21,11 +21,13 @@ public class Popup
 	public ProgressBar pb;
 	public CheckBox chbsave;
 	public TextView chvsave;
+	private ListView listView1;
 	Popup (Activity iactivity)
 	{
 		activity=iactivity;
 		dialog = new Dialog(activity);
 		dialog.setContentView(R.layout.popup);//popup view is the layout you created
+		listView1 = (ListView)dialog.findViewById(R.id.listView1);
 		txt1 = (TextView)dialog.findViewById(R.id.mbtext1);
 		txt2 = (TextView)dialog.findViewById(R.id.mbtext2);
 		btn3=(Button)dialog.findViewById(R.id.mbbtn3);
@@ -39,6 +41,7 @@ public class Popup
 	}
 	public void invisible()
 	{
+		listView1.setVisibility(View.GONE);
 		txt1.setVisibility(View.GONE);
 		txt2.setVisibility(View.GONE);
 		btn3.setVisibility(View.GONE);
@@ -273,16 +276,41 @@ public class Popup
 			Log.d("xxx",err.getMessage());
 		}
 	}
+	
+	
+	public void MsgBoxListView(String title,ArrayAdapter<String> adapter, OnClickListener cancel)
+	{
+		invisible();
+		dialog.setTitle(title);
+		listView1.setVisibility(View.VISIBLE);
+		listView1.setAdapter(adapter);
+		
+		try
+		{
+			dialog.show();
+		}
+		catch(Exception err)
+		{
+			Log.d("xxx",err.getMessage());
+		}
+	}
+	
 	public void MsgBoxProgress(String title,String msg,boolean horizontal, int arg1, int arg2, OnClickListener cancel)
 	{
 		invisible();
 		dialog.setTitle(title);
 		txt1.setVisibility(View.VISIBLE);
+		txt2.setVisibility(View.VISIBLE);
 		txt1.setText(msg);
+		txt2.setText("Whole: "+arg1+"/ Checked: "+arg2);
 		pb.setVisibility(View.VISIBLE);
 		btn1.setVisibility(View.VISIBLE);
 		btn1.setText("CANCEL");
 		btn1.setOnClickListener(cancel);
+		pb.setProgress(arg2);
+		pb.setMax(arg1);		
+		pb.setIndeterminate(false);
+		
 		try
 		{
 			dialog.show();
