@@ -6,26 +6,25 @@ import android.view.View;
 import android.view.View.*;
 import android.widget.*;
 
-	public class MessageHandler extends Handler
+	public class MessageHandlerByOnce extends Handler
 	{
+		private boolean resume;
+		
 		private TextView _logView;				
 		public boolean _flagClickButtons;
 		private ContactsProvider _contactsProvider;
-		private boolean mFinished = false;	
-		StepsController stepsController;
-		
-		public MessageHandler(StepsController stepsController)
+		MessageHandlerByOnce _mhandler;
+		BaseThread thread;
+		public MessageHandlerByOnce(BaseThread thread)
 		{		
-			this.stepsController = stepsController;
+			this.thread = thread;
 			TextView logView = (TextView)App.Instance().activity.findViewById(R.id.tv);
 			_contactsProvider = new ContactsProvider();
 			_logView = logView;			
 		}
+				
 		
-		public boolean getOnFinished(){
-			return mFinished;
-		}
-		
+		@Override 
 		public void handleMessage(Message msg)
 		{
 			MessageType _whichChoos = MessageType.values()[msg.what];
@@ -43,9 +42,6 @@ import android.widget.*;
 			case Finally:				
 				Finally();				
 				break;
-			case ShowProgress:				
-				ShowProgress(msg);				
-				break;
 			case SetProgressBar:
 				SetProgressBar(msg);
 				break;
@@ -53,61 +49,8 @@ import android.widget.*;
 				ShowListView(msg);
 				break;
 			default:
-				break;				
+				break;
 			}
-		}
-		
-		private void ShowPopupForChooseAction(Message msg)
-		{
-			_flagClickButtons = true;
-			final int contactId = msg.arg2;
-			OnClickListener _onButtonDelete = new OnClickListener() { 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (_flagClickButtons){
-					App.Instance().Popup.MsgBoxClose();
-					_contactsProvider.ContactDelete(contactId);
-					
-						_flagClickButtons = !_flagClickButtons;
-						stepsController.getResultHandlerByOnce().Resume();
-				}
-			}
-			};
-
-			OnClickListener _onButtonJoin = new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
-					if (_flagClickButtons){
-
-					App.Instance().Popup.MsgBoxClose();
-					_contactsProvider.ContactJoin (contactId);
-					
-						_flagClickButtons = !_flagClickButtons;
-						stepsController.getResultHandlerByOnce().Resume();
-					}
-				} 							
-			};
-
-			OnClickListener _onButtonIgnore = new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					if (_flagClickButtons){
-
-						App.Instance().Popup.MsgBoxClose();						
-							
-							_flagClickButtons = !_flagClickButtons;
-							stepsController.getResultHandlerByOnce().Resume();
-						}
-				}
-				
-			};
-			App.Instance().Popup.MsgBoxButtons ("What do with:", msg.obj.toString () + " ?", "Delete", "Join", "Ignore", _onButtonDelete, _onButtonJoin, _onButtonIgnore, true);
 		}
 
 		private void ShowListView(Message msg) {
@@ -125,20 +68,6 @@ import android.widget.*;
 			App.Instance().Popup.MsgBoxClose ();			
 		}
 
-		private void ShowProgress(Message msg)
-		{
-			View.OnClickListener cancel = new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					mFinished = true;					
-					Finally();					
-				}				
-			};
-			
-			
-			App.Instance().Popup.MsgBoxProgress("Processing...",msg.obj.toString(),true, msg.arg1, msg.arg2, cancel);
-		}
-
 		private void SetTextToLogView(Message msg)
 		{
 //			_logView.setText (msg.obj.toString (), TextView.BufferType.NORMAL);
@@ -150,7 +79,58 @@ import android.widget.*;
 		}
 
 
-		
+		private void ShowPopupForChooseAction( Message msg)
+		{
+			_flagClickButtons = true;
+			final int contactId = msg.arg2;
+			OnClickListener _onButtonDelete = new OnClickListener() { 
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (_flagClickButtons){
+					App.Instance().Popup.MsgBoxClose();
+					_contactsProvider.ContactDelete(contactId);
+					
+						_flagClickButtons = !_flagClickButtons;
+						thread.Resume();
+				}
+			}
+			};
+
+			OnClickListener _onButtonJoin = new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+					if (_flagClickButtons){
+
+					App.Instance().Popup.MsgBoxClose();
+					_contactsProvider.ContactJoin (contactId);
+					
+						_flagClickButtons = !_flagClickButtons;
+						thread.Resume();
+					}
+				} 							
+			};
+
+			OnClickListener _onButtonIgnore = new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					if (_flagClickButtons){
+
+						App.Instance().Popup.MsgBoxClose();						
+							
+							_flagClickButtons = !_flagClickButtons;
+							thread.Resume();
+						}
+				}
+				
+			};
+			App.Instance().Popup.MsgBoxButtons ("What do with:", msg.obj.toString () + " ?", "Delete", "Join", "Ignore", _onButtonDelete, _onButtonJoin, _onButtonIgnore, true);
+		}
 				
 	}
 

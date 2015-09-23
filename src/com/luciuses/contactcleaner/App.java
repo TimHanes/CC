@@ -2,19 +2,22 @@ package com.luciuses.contactcleaner;
 
 import android.app.*;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.view.*;
 
 import android.widget.*;
 
 	public class App
 	{		
-		private static App instance = new App ();	
-		public ViewGroup RelativeLayout ;
+		private static App instance = new App ();			
 		public Popup Popup ;
-		public Context AppContext;
-		public MessageHandler messegeHandler;
-		public ContactsHandler contactsHandler;
+		public Context AppContext;			
 		public DbProvider dbProvider;
+		public Activity activity;		
+		
+		
+		
 		
 		App() 
 		{}
@@ -26,25 +29,18 @@ import android.widget.*;
 
 		public void Init (Activity activity, Context context)
 		{
-			RelativeLayout = (ViewGroup)activity.findViewById(R.id.ltrel);
+			this.activity = activity;			
 			AppContext = context;
 			Popup= new Popup(activity);
-			dbProvider = new DbProvider(AppContext);
-			TextView logView = (TextView)this.RelativeLayout.findViewById(R.id.tv);
-			messegeHandler = new MessageHandler(logView);
-			contactsHandler = new ContactsHandler();
-			
-			
-			
-			
+			dbProvider = new DbProvider(AppContext);						
 			Button _buttonStart = (Button)activity.findViewById(R.id.btn);						
 			View.OnClickListener buttonStartListener = new View.OnClickListener(){				
 				@Override
 				public void onClick(View v) {					
-					contactsHandler.start();
+					new StepsController().start();					
 				}
 			};
-			_buttonStart.setOnClickListener(buttonStartListener);
+			_buttonStart.setOnClickListener(buttonStartListener);						
 		}		
 	}
 

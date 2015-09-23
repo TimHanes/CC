@@ -7,7 +7,7 @@ import android.os.Message;
 
 public class ResultShower
 	{
-	private MessageHandler _mhandler;
+	private ContactsMessageHandler _mhandler;
 	private ContactsProvider _contactsProvider = new ContactsProvider();
 	private DbProvider dbProvider;
 	

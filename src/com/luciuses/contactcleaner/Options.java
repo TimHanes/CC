@@ -7,9 +7,9 @@ import android.widget.*;
 	{
 		public Options()
 		{
-			CheckBox Byname=(CheckBox)App.Instance().RelativeLayout.findViewById(R.id.byname);
-			CheckBox Byphone=(CheckBox)App.Instance().RelativeLayout.findViewById(R.id.byphone);
-			CheckBox Bdvanced=(CheckBox)App.Instance().RelativeLayout.findViewById(R.id.advanced);
+			CheckBox Byname=(CheckBox)App.Instance().activity.findViewById(R.id.byname);
+			CheckBox Byphone=(CheckBox)App.Instance().activity.findViewById(R.id.byphone);
+			CheckBox Bdvanced=(CheckBox)App.Instance().activity.findViewById(R.id.advanced);
 			ByName = Byname.isChecked();
 			ByPhone = Byphone.isChecked();
 			Advanced = Bdvanced.isChecked();

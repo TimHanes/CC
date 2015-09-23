@@ -10,7 +10,7 @@ import android.net.*;
 public class ContactsProvider 
 	{				
 		private Context _context = App.Instance().AppContext;		
-		private MessageHandler _mhandler;		
+		private ContactsMessageHandler _mhandler;		
 		private DbProvider dbProvider = new DbProvider(_context);
 							
 		public DbProvider getDbProvider(){			
@@ -21,7 +21,7 @@ public class ContactsProvider
 		{
 			Uri uri = UriById(id);
 			
-			Message.obtain(_mhandler,MessageType.AddToLogView.ordinal(),"deleted:"+ NameByUri(uri)+"\r\n").sendToTarget();//
+//			Message.obtain(_mhandler,MessageType.AddToLogView.ordinal(),"deleted:"+ NameByUri(uri)+"\r\n").sendToTarget();//
 			_context.getContentResolver().delete(uri,null,null);
 		}
 
@@ -148,7 +148,7 @@ public class ContactsProvider
 		
 		public void ContactJoin(int id)
 		{						
-			Message.obtain(_mhandler,MessageType.AddToLogView.ordinal(),"joined:"+ NameByUri(UriById(id))+"\r\n").sendToTarget();//
+//			Message.obtain(_mhandler,MessageType.AddToLogView.ordinal(),"joined:"+ NameByUri(UriById(id))+"\r\n").sendToTarget();//
 		}
 	} 
 

@@ -11,22 +11,20 @@ import android.util.*;
 import android.net.*;
 
 public class ContactsHandler extends BaseThread
-	{
-				
-		private boolean _mFinished = false;
+	{						
 		private Context _context = App.Instance().AppContext;		
-		private MessageHandler _mhandler;		
+		private MessageHandler messageHandler;		
 		private DbProvider dbProvider;
 		private int count = 0;
 		private ContactsProvider _contactsProvider;
-		
-		
-		public ContactsHandler()
-		{		
-			dbProvider = App.Instance().dbProvider;
-			_mhandler = App.Instance().messegeHandler;
-			_contactsProvider = new ContactsProvider();	
 			
+		
+		
+		public ContactsHandler(MessageHandler messageHandler)
+		{		
+			_contactsProvider = new ContactsProvider();
+			dbProvider = App.Instance().dbProvider;	
+			 this.messageHandler = messageHandler;
 		}
 		
 		public DbProvider getDbProvider(){			
@@ -39,30 +37,24 @@ public class ContactsHandler extends BaseThread
 			Looper.prepare();
 			Options options = new Options ();
 			dbProvider.Clean();
+
 			
 
 			Cursor cur = _context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
 			cur.moveToFirst ();			
 								
-			while (cur.moveToNext () && !_mFinished) 
+			while (cur.moveToNext () && !messageHandler.getOnFinished()) 
 			{
 				DublicatesOfContact dublsOfCont = SearchDublicate (cur, options);
 				if (dublsOfCont != null){
 					count++;
 					dbProvider.Save(dublsOfCont);
 				}	
-				super.run();
-			}
-			
-			
-			Message.obtain(_mhandler,MessageType.Finally.ordinal()).sendToTarget();
-
-		}
-
-		public void OnFinished() {
-			_mFinished=true;
-		}
+				super.run();				
+			}						
+			Message.obtain(messageHandler,MessageType.Finally.ordinal()).sendToTarget();
+		}		
 		
 		
 		
@@ -157,7 +149,7 @@ public class ContactsHandler extends BaseThread
 			int fid = _contactsProvider.IdByUri (uri);
 			if (fid > contact.getId()) {
 				String fname = _contactsProvider.NameByUri (uri);
-				Message.obtain (_mhandler, MessageType.AddToLogView.ordinal(), "find:" + fid + "-" + fname + "\r\n").sendToTarget ();
+				Message.obtain (messageHandler, MessageType.AddToLogView.ordinal(), "find:" + fid + "-" + fname + "\r\n").sendToTarget ();
 				return true;
 			}
 			return false;
@@ -166,8 +158,8 @@ public class ContactsHandler extends BaseThread
 		private void DisplayInfo (Cursor cur)
 		{
 			Contact contact = new Contact (cur);
-			Message.obtain (_mhandler, MessageType.SetTextToLogView.ordinal(), "work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget ();
-			Message.obtain (_mhandler, MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.getName() + "\r\n" + "Found dublicates:"+count ).sendToTarget ();
+			Message.obtain (messageHandler, MessageType.SetTextToLogView.ordinal(), "work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget ();
+			Message.obtain (messageHandler, MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.getName() + "\r\n" + "Found dublicates:"+count ).sendToTarget ();
 		}
 	} 
 

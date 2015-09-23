@@ -28,6 +28,7 @@ package com.luciuses.contactcleaner;
 		       notify();
 		   }
 
+		@Override
 		public void run()
 		{
 			synchronized(this) {
