@@ -1,5 +1,7 @@
 package com.luciuses.contactcleaner.providers;
 
+import java.util.Iterator;
+
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
@@ -12,7 +14,7 @@ import android.util.*;
 import android.net.*;
 import android.os.Message;
 
-public class ContactsProvider extends
+public class ContactsProvider
 	{				
 		private Context context = App.Instance().getContext();					
 		MessageHandler messageHandler;
@@ -32,10 +34,16 @@ public class ContactsProvider extends
 		}
 
 		public int getCount(){
-			Cursor cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-			return cur.getCount();
+			Cursor cur = getAllContactCursor();
+			int count = cur.getCount();
+			return count;
 		}
 		
+		public Cursor getAllContactCursor() {
+			Cursor cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+			return cur;
+		}
+
 		public String PhonesByUri(Uri uri)
 		{
 			Cursor cur = getCursorByUri(uri);
@@ -100,7 +108,7 @@ public class ContactsProvider extends
 			return uri;
 		}
 
-		public Contact ContactByUri(Uri uri){
+		public Contact getContactByUri(Uri uri){
 			Contact contact = new Contact(IdByUri(uri),NameByUri(uri),PhonesByUri(uri));
 			return contact;
 		}
@@ -203,6 +211,26 @@ public class ContactsProvider extends
 				return false;
 			}			
 			return true;
+		}
+
+		public Contact getContactByPosition(int position){
+			Cursor cursor =	getAllContactCursor();
+			cursor.moveToPosition(position);
+			Uri uri = UriByCursor(cursor);
+			Contact contact = getContactByUri(uri);
+			return contact;
+		}
+		
+		public Contact[] getContacts(){
+			int count = getCount();
+			Contact[] conacts = new Contact[count];
+			Cursor cursor =	getAllContactCursor();
+			cursor.moveToFirst();
+			for (int i = 0 ; i < count; i++, cursor.moveToNext()) {
+				Uri uri = UriByCursor(cursor);
+				conacts[i] = getContactByUri(uri);
+			}
+			return conacts;
 		}
 	} 
 

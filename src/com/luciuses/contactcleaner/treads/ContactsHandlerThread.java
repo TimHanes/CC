@@ -48,21 +48,26 @@ public class ContactsHandlerThread extends BaseThread
 			Options options = new Options ();
 			dbProvider.Clean();
 			
-			int contactCount = contactsProvider.getCount();		
-			
-			for(int i; i < contactCount; i++){
-				DublicatesOfContact dublsOfCont = SearchDublicate (options);
+			int contactCount = contactsProvider.getCount();
+//			Contact[] contacts = contactsProvider.getContacts();
+//			Cursor cur = contactsProvider.getAllContactCursor();
+			Cursor cur = _context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);		
+			for(int position = 0; position < contactCount; position++){
+				Contact contact = contactsProvider.getContactByPosition(position);
+				cur.moveToPosition(position);
+				DublicatesOfContact dublsOfCont = SearchDublicate (cur, options);
 				if (dublsOfCont != null){
 					count++;
 					dbProvider.Save(dublsOfCont);
 				}	
 				super.run();
-				if(!mFinish)break;
+				if(mFinish)break;
 			}										
 			Message.obtain(executor.getMessageHandler(),MessageType.Finally.ordinal()).sendToTarget();
 		}		
 		
 		
+
 		
 		private DublicatesOfContact SearchDublicate (Cursor cur, Options options)
 		{
