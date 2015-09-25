@@ -1,4 +1,8 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.providers;
+
+import com.luciuses.contactcleaner.Functions.UriFunctions;
+import com.luciuses.contactcleaner.basis.DbHelper;
+import com.luciuses.contactcleaner.models.DublicatesOfContact;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,6 +15,7 @@ public class DbProvider {
  
 	private SQLiteDatabase sdb;
 	private DbHelper dbHelper;
+	private UriFunctions uriFunctions = new UriFunctions();
 	
 	public DbProvider(Context context){
 		dbHelper = new DbHelper(context, "database1.db", null, 1);		
@@ -45,29 +50,7 @@ public class DbProvider {
 	
 	public void Clean(){
 		sdb.delete(DbHelper.DATABASE_TABLE, null, null);
-	}
-	
-	private Uri[] StpingToUri(String[] uriStr){
-		Uri[] uri = new Uri[uriStr.length];
-		for (int i = 0; i < uriStr.length; i++){
-			uri[i] = Uri.parse(uriStr[i]);
-		}		
-		return uri;
-	}
-	
-	private String UriSerialization(Uri[] urisDublArr){
-		String[] urisDublStrArr =  UriToString(urisDublArr);
-    	String urisDublStr = TextUtils.join(" ", urisDublStrArr );
-		return urisDublStr;
-	}
-	
-	private String[] UriToString(Uri[] uri){
-		String[] uriStr = new String[uri.length];
-		for (int i = 0; i < uri.length; i++){
-			uriStr[i] = uri[i].toString();
-		}		
-		return uriStr;
-	}
+	}	
 	
 	private ContentValues PutInContent(DublicatesOfContact dublsOfCont){
 		ContentValues newValues = new ContentValues();
@@ -75,13 +58,13 @@ public class DbProvider {
 		    
 		    Uri[] urisDublArr = dublsOfCont.getUriDublicatesByName();	    
 		    if (urisDublArr!=null){
-		    	String urisDublStr = UriSerialization(urisDublArr);
+		    	String urisDublStr = uriFunctions.UriSerialization(urisDublArr);
 		    	newValues.put(DbHelper.URI_DUBLICATES_BY_NAME, urisDublStr); 	   	
 		    }	 
 		    
 		     urisDublArr = dublsOfCont.getUriDublicatesByPhone();	    
 		    if (urisDublArr!=null){	    	
-		    	String urisDublStr = UriSerialization(urisDublArr);
+		    	String urisDublStr = uriFunctions.UriSerialization(urisDublArr);
 		    	newValues.put(DbHelper.URI_DUBLICATES_BY_PHONE, urisDublStr);	    	
 		    }   
 		    return newValues;
@@ -103,8 +86,8 @@ public class DbProvider {
 
 		if (DublicatesByName!=null) {
 			String[] strUris = TextUtils.split( DublicatesByName, " ");
-			uriDublicatesByName = StpingToUri(strUris);}
-		if (DublicatesByPhone!=null) uriDublicatesByPhone = StpingToUri(TextUtils.split( DublicatesByPhone, " "));
+			uriDublicatesByName = uriFunctions.StpingToUri(strUris);}
+		if (DublicatesByPhone!=null) uriDublicatesByPhone = uriFunctions.StpingToUri(TextUtils.split( DublicatesByPhone, " "));
 		return new DublicatesOfContact(contactUri, uriDublicatesByName, uriDublicatesByPhone);
 	}
 	
@@ -112,5 +95,10 @@ public class DbProvider {
 		Cursor cursor = sdb.query(DbHelper.DATABASE_TABLE, new String[] {DbHelper.CONTACT_URI},
 				null, null, null, null, null) ;
 		return cursor;
+	}
+
+	public void ContactDelete(Uri uri) {
+		sdb.delete(DbHelper.DATABASE_TABLE, null, null);
+		sdb.delete(DbHelper.DATABASE_TABLE, DbHelper.CONTACT_URI+" = " + uri.toString(), null);					
 	} 
 }

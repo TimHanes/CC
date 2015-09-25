@@ -1,11 +1,15 @@
 
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.screens;
+
+import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.R;
 
 import android.app.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class Popup
 {
@@ -22,7 +26,7 @@ public class Popup
 	public CheckBox chbsave;
 	public TextView chvsave;
 	private ListView listView1;
-	Popup (Activity iactivity)
+	public Popup (Activity iactivity)
 	{
 		activity=iactivity;
 		dialog = new Dialog(activity);
@@ -278,13 +282,15 @@ public class Popup
 	}
 	
 	
-	public void MsgBoxListView(String title,ArrayAdapter<String> adapter, OnClickListener cancel)
+	public void MsgBoxListView(String title, String[] uris, OnItemClickListener listener)
 	{
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, uris);
 		invisible();
 		dialog.setTitle(title);
 		listView1.setVisibility(View.VISIBLE);
 		listView1.setAdapter(adapter);
-		
+		listView1.setOnItemClickListener(listener);
+			
 		try
 		{
 			dialog.show();

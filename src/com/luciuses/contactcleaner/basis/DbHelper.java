@@ -1,4 +1,4 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.basis;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

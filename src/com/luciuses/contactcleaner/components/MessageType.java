@@ -1,4 +1,4 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.components;
 
 public enum MessageType
 	{
@@ -9,5 +9,6 @@ public enum MessageType
 		ShowProgress,
 		Finally,
 		SetProgressBar,
-		ShowListView
+		ShowListView,
+		ContactExecuted
 	}

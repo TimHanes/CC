@@ -1,4 +1,4 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.models;
 
 import android.net.Uri;
 

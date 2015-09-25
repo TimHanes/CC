@@ -1,4 +1,4 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.basis;
 
 	public class BaseThread extends Thread {
 		
@@ -23,7 +23,7 @@ package com.luciuses.contactcleaner;
 			      suspended = true;			   
 		}
 
-		synchronized void Resume() {
+		public synchronized void Resume() {
 		      suspended = false;
 		       notify();
 		   }

@@ -1,8 +1,17 @@
-package com.luciuses.contactcleaner;
+package com.luciuses.contactcleaner.treads;
 
 import android.os.*;
 
 import java.util.ArrayList;
+
+import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.basis.BaseThread;
+import com.luciuses.contactcleaner.components.MessageType;
+import com.luciuses.contactcleaner.models.Contact;
+import com.luciuses.contactcleaner.models.DublicatesOfContact;
+import com.luciuses.contactcleaner.models.Options;
+import com.luciuses.contactcleaner.providers.ContactsProvider;
+import com.luciuses.contactcleaner.providers.DbProvider;
 
 import android.content.*;
 import android.database.*;
@@ -10,26 +19,27 @@ import android.provider.*;
 import android.util.*;
 import android.net.*;
 
-public class ContactsHandler extends BaseThread
+public class ContactsHandlerThread extends BaseThread
 	{						
-		private Context _context = App.Instance().AppContext;		
-		private MessageHandler messageHandler;		
+		private Context _context = App.Instance().getContext();		
+		private ExecutorThread executor;		
 		private DbProvider dbProvider;
 		private int count = 0;
-		private ContactsProvider _contactsProvider;
+		private ContactsProvider contactsProvider;
+		private boolean mFinish;
 			
 		
 		
-		public ContactsHandler(MessageHandler messageHandler)
+		public ContactsHandlerThread(ExecutorThread executor)
 		{		
-			_contactsProvider = new ContactsProvider();
-			dbProvider = App.Instance().dbProvider;	
-			 this.messageHandler = messageHandler;
+			contactsProvider = new ContactsProvider(executor.getMessageHandler());
+			dbProvider = App.Instance().getDbProvider();	
+			 this.executor = executor;
 		}
 		
-		public DbProvider getDbProvider(){			
-			return dbProvider;			
-		}
+		public void setMarkFinish(boolean mFinish) {
+			this.mFinish = mFinish;
+		}		
 		
 		@Override
 		public void run()
@@ -37,23 +47,19 @@ public class ContactsHandler extends BaseThread
 			Looper.prepare();
 			Options options = new Options ();
 			dbProvider.Clean();
-
 			
-
-			Cursor cur = _context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-
-			cur.moveToFirst ();			
-								
-			while (cur.moveToNext () && !messageHandler.getOnFinished()) 
-			{
-				DublicatesOfContact dublsOfCont = SearchDublicate (cur, options);
+			int contactCount = contactsProvider.getCount();		
+			
+			for(int i; i < contactCount; i++){
+				DublicatesOfContact dublsOfCont = SearchDublicate (options);
 				if (dublsOfCont != null){
 					count++;
 					dbProvider.Save(dublsOfCont);
 				}	
-				super.run();				
-			}						
-			Message.obtain(messageHandler,MessageType.Finally.ordinal()).sendToTarget();
+				super.run();
+				if(!mFinish)break;
+			}										
+			Message.obtain(executor.getMessageHandler(),MessageType.Finally.ordinal()).sendToTarget();
 		}		
 		
 		
@@ -82,9 +88,9 @@ public class ContactsHandler extends BaseThread
 		{		
 			Uri[] chConUriByPhone = null;
 			try {
-				String[] phones = _contactsProvider.PhonesByCursor (cur).split ("\r\n");
+				String[] phones = contactsProvider.PhonesByCursor (cur).split ("\r\n");
 				for (int p = 0; p < phones.length; p++) {
-				Uri[] foundUri = _contactsProvider.GetContactUrisByPhone (phones [p]);
+				Uri[] foundUri = contactsProvider.GetContactUrisByPhone (phones [p]);
 					if (foundUri != null)
 						chConUriByPhone = CheckContacts ( cur, foundUri);
 				}
@@ -93,33 +99,33 @@ public class ContactsHandler extends BaseThread
 				Log.e ("byphones", err.getMessage());
 			}
 			if (chConUriByPhone == null ) return null;
-			return new DublicatesOfContact(_contactsProvider.UriByCursor(cur), null, chConUriByPhone);
+			return new DublicatesOfContact(contactsProvider.UriByCursor(cur), null, chConUriByPhone);
 		}
 
 		private DublicatesOfContact CheckByName( Cursor cur)
 		{
 			Contact contact = new Contact (cur);
-			Uri[] foundUri = _contactsProvider.GetContactsUriByName (contact.getName(), false);
+			Uri[] foundUri = contactsProvider.GetContactsUriByName (contact.getName(), false);
 			Uri[] chConUriByName = CheckContacts (cur, foundUri);
 			if (chConUriByName == null ) return null;
-			return new DublicatesOfContact(_contactsProvider.UriByCursor(cur), chConUriByName, null);
+			return new DublicatesOfContact(contactsProvider.UriByCursor(cur), chConUriByName, null);
 		}
 
 		private DublicatesOfContact CheckByNameAndPhone( Cursor cur)
 		{
 			Uri[] chConUriByPhone = null;
 			Contact contact = new Contact (cur);		
-			Uri[] foundUriByName = _contactsProvider.GetContactsUriByName (contact.getName(), false);
+			Uri[] foundUriByName = contactsProvider.GetContactsUriByName (contact.getName(), false);
 			Uri[] chConUriByName = CheckContacts (cur, foundUriByName );
-			String[] phones = _contactsProvider.PhonesByCursor (cur).split ("\r\n");
+			String[] phones = contactsProvider.PhonesByCursor (cur).split ("\r\n");
 			for (int p = 0; p < phones.length; p++) {
-				Uri[]	foundUriByPhone = _contactsProvider.GetContactUrisByPhone (phones [p]);
+				Uri[]	foundUriByPhone = contactsProvider.GetContactUrisByPhone (phones [p]);
 			chConUriByPhone =	CheckContacts (cur, foundUriByPhone);
 			}
 			 if((chConUriByName == null)&(chConUriByPhone == null)){
 				 return null;
 			 }
-			return new DublicatesOfContact(_contactsProvider.UriByCursor(cur), chConUriByName, chConUriByPhone);
+			return new DublicatesOfContact(contactsProvider.UriByCursor(cur), chConUriByName, chConUriByPhone);
 		}
 		
 		private Uri[] CheckContacts(Cursor cur, Uri[] foundUri)
@@ -146,10 +152,10 @@ public class ContactsHandler extends BaseThread
 		private boolean CompaireContact( Cursor cur, Uri uri)
 		{
 			Contact contact = new Contact (cur);
-			int fid = _contactsProvider.IdByUri (uri);
+			int fid = contactsProvider.IdByUri (uri);
 			if (fid > contact.getId()) {
-				String fname = _contactsProvider.NameByUri (uri);
-				Message.obtain (messageHandler, MessageType.AddToLogView.ordinal(), "find:" + fid + "-" + fname + "\r\n").sendToTarget ();
+				String fname = contactsProvider.NameByUri (uri);
+				Message.obtain (executor.getMessageHandler(), MessageType.AddToLogView.ordinal(), "find:" + fid + "-" + fname + "\r\n").sendToTarget ();
 				return true;
 			}
 			return false;
@@ -158,8 +164,10 @@ public class ContactsHandler extends BaseThread
 		private void DisplayInfo (Cursor cur)
 		{
 			Contact contact = new Contact (cur);
-			Message.obtain (messageHandler, MessageType.SetTextToLogView.ordinal(), "work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget ();
-			Message.obtain (messageHandler, MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.getName() + "\r\n" + "Found dublicates:"+count ).sendToTarget ();
+			Message.obtain (executor.getMessageHandler(), MessageType.SetTextToLogView.ordinal(), "work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget ();
+			Message.obtain (executor.getMessageHandler(), MessageType.ShowProgress.ordinal(), cur.getCount(), cur.getPosition(), contact.getName() + "\r\n" + "Found dublicates:"+count ).sendToTarget ();
 		}
+
+		
 	} 
 

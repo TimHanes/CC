@@ -1,24 +1,23 @@
 package com.luciuses.contactcleaner;
 
-import android.app.*;
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.view.*;
+import com.luciuses.contactcleaner.providers.DbProvider;
+import com.luciuses.contactcleaner.screens.Popup;
+import com.luciuses.contactcleaner.treads.ExecutorThread;
 
+import android.app.*;
+import android.content.*;
+import android.view.*;
+import android.view.View.OnClickListener;
 import android.widget.*;
 
 	public class App
 	{		
 		private static App instance = new App ();			
-		public Popup Popup ;
-		public Context AppContext;			
-		public DbProvider dbProvider;
-		public Activity activity;		
-		
-		
-		
-		
+		private Popup popup ;
+		private Context context;			
+		private DbProvider dbProvider;
+		private Activity activity;
+	
 		App() 
 		{}
 
@@ -26,21 +25,37 @@ import android.widget.*;
 		{			
 				return instance;
 		}
+		
+		public Popup getPopup() {
+			return popup;
+		}
+		
+		public Context getContext() {
+			return context;
+		}
 
+		public DbProvider getDbProvider() {
+			return dbProvider;
+		}
+
+		public Activity getActivity() {
+			return activity;
+		}	
+		
 		public void Init (Activity activity, Context context)
 		{
 			this.activity = activity;			
-			AppContext = context;
-			Popup= new Popup(activity);
-			dbProvider = new DbProvider(AppContext);						
-			Button _buttonStart = (Button)activity.findViewById(R.id.btn);						
-			View.OnClickListener buttonStartListener = new View.OnClickListener(){				
+			this.context = context;
+			popup = new Popup(activity);
+			dbProvider = new DbProvider(context);						
+			Button buttonStart = (Button)activity.findViewById(R.id.btn);						
+			OnClickListener buttonStartListener = new OnClickListener(){				
 				@Override
 				public void onClick(View v) {					
-					new StepsController().start();					
+					new ExecutorThread().start();					
 				}
 			};
-			_buttonStart.setOnClickListener(buttonStartListener);						
-		}		
+			buttonStart.setOnClickListener(buttonStartListener);						
+		}												
 	}
 
