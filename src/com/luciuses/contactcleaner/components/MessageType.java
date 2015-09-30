@@ -10,5 +10,6 @@ public enum MessageType
 		Finally,
 		SetProgressBar,
 		ShowListView,
-		ContactExecuted
+		ContactExecuted,
+		ContactDeleted
 	}

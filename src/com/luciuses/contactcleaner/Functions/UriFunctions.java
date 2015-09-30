@@ -25,5 +25,5 @@ import android.text.TextUtils;
 			uriStr[i] = uri[i].toString();
 		}		
 		return uriStr;
-	}	
+	}
 }

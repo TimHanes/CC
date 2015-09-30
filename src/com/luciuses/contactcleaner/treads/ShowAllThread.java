@@ -19,7 +19,8 @@ public class ShowAllThread extends BaseThread
 	public ShowAllThread(MessageHandler messageHandler){
 		contactsProvider = new ContactsProvider(messageHandler);
 		this.messageHandler = messageHandler;
-		dbProvider = App.Instance().getDbProvider();		
+		dbProvider = App.Instance().getDbProvider();	
+		super.setName("ShowAllThread");
 	}
 		
 	
@@ -29,9 +30,15 @@ public class ShowAllThread extends BaseThread
 		ShowList(dbProvider);		
 	}
 
-	private void ShowList(DbProvider dbProvider){
-		Uri[] uris = dbProvider.getContactsUri();		
+	private void ShowList(DbProvider dbProvider){	
+		Uri[] uris = dbProvider.getContactsUri();
+		String[] showArray = new String[uris.length];
+		for(int i = 0 ; i < uris.length; i++ ){
+			String name = contactsProvider.getNameByUri(uris[i]);
+			String phones =  contactsProvider.getPhonesByUri(uris[i]);
+			showArray[i] = name + phones;
+		}
 		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), 
-				contactsProvider.NamesByUris(uris)).sendToTarget();			
+				showArray).sendToTarget();			
 	}			
 }

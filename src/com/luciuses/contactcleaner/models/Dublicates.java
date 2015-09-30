@@ -2,13 +2,13 @@ package com.luciuses.contactcleaner.models;
 
 import android.net.Uri;
 
-	public class DublicatesOfContact
+	public class Dublicates
 	{
 		private Uri contactUri;
 		private Uri[] uriDublicatesByName ;
 		private Uri[] uriDublicatesByPhone ;
 		
-		public DublicatesOfContact (Uri contactUri, Uri[] uriDublsByName, Uri[] uriDublsByPhone)
+		public Dublicates (Uri contactUri, Uri[] uriDublsByName, Uri[] uriDublsByPhone)
 		{
 			setUriDublicatesByPhone(uriDublsByPhone);
 			setUriDublicatesByName(uriDublsByName);
