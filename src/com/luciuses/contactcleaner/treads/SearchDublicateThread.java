@@ -21,16 +21,18 @@ public class SearchDublicateThread extends BaseThread {
 	private Contact contact;
 	
 	
-	public SearchDublicateThread(Contact contact, ExecutorThread executor) {
+	public SearchDublicateThread( Contact contact, ExecutorThread executor) {		
 		this.contact = contact;
 		this.executor = executor;
 		contactsProvider = new ContactsProvider(executor.getMessageHandler());
+		super.setName("SearchDublicateThread");
 	}
 	
-	public SearchDublicateThread(Uri uriContact, ExecutorThread executor) {		
+	public SearchDublicateThread( Uri uriContact, ExecutorThread executor) {		
 		this.executor = executor;
 		contactsProvider = new ContactsProvider(executor.getMessageHandler());
 		this.contact = contactsProvider.getContactByUri(uriContact);
+		super.setName("SearchDublicateThread");
 	}
 
 	public Dublicates getDublicates() {
@@ -41,7 +43,7 @@ public class SearchDublicateThread extends BaseThread {
 	public void run() {		
 		Looper.prepare();
 		Options options = new Options();
-		SearchDublicate(contact, options);
+		dublicates = SearchDublicate(contact, options);
 	}
 	
 	private Dublicates SearchDublicate(Contact contact, Options options) {
@@ -90,11 +92,11 @@ public class SearchDublicateThread extends BaseThread {
 			Uri[] foundUriByPhone = contactsProvider.getContactUrisByPhone(phones[p]);
 			chConUriByPhone = CheckContacts(contact, foundUriByPhone);
 		}
-		if ((chConUriByName == null) & (chConUriByPhone == null)) {
-			return null;
+		if ((chConUriByName != null) || (chConUriByPhone != null)) {
+			return new Dublicates(contactsProvider.getUriByContactId(contact.getId()), chConUriByName,
+				chConUriByPhone);		
 		}
-		return new Dublicates(contactsProvider.getUriByContactId(contact.getId()), chConUriByName,
-				chConUriByPhone);
+		return null;
 	}
 
 	private Uri[] CheckContacts(Contact contact, Uri[] uris) {
@@ -127,6 +129,5 @@ public class SearchDublicateThread extends BaseThread {
 		}
 		return false;
 	}
-	
 }
 

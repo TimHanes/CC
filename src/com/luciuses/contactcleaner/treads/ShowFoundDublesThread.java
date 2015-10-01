@@ -32,23 +32,32 @@ public class ShowFoundDublesThread extends BaseThread {
 
 	private void ShowList(DbProvider dbProvider){	
 		DublicatesContact dublicatesContact = contactsProvider.getDublicatesContact(dublicates);
-		int count = dublicatesContact.getDublicatesByName().length + dublicatesContact.getDublicatesByPhone().length;
-		String[] showArray = new String[count];
+		
 		int i = 0;
-		for(; i < dublicatesContact.getDublicatesByName().length; i++ ){
+		int countByName = 0;
+		int countByPhone = 0;
+		if (dublicatesContact.getDublicatesByName() != null) 
+			countByName = dublicatesContact.getDublicatesByName().length;
+		if (dublicatesContact.getDublicatesByPhone() != null) 
+			countByPhone = dublicatesContact.getDublicatesByPhone().length;	
+		int count = countByPhone + countByName;
+		String[] showArray = new String[count];
+		
+		for(; i < countByName; i++ ){
 			String name = dublicatesContact.getDublicatesByName()[i].getName();
 			String phones =  dublicatesContact.getDublicatesByName()[i].getPhones();
-			showArray[i] = name + phones;
+			showArray[i] = name + "\r\n" + phones + "\r\n";
 		}
 		for(; i < count; i++ ){
-			String name = dublicatesContact.getDublicatesByName()[i].getName();
-			String phones =  dublicatesContact.getDublicatesByName()[i].getPhones();
-			showArray[i] = name + phones;
+			String name = dublicatesContact.getDublicatesByPhone()[i].getName();
+			String phones =  dublicatesContact.getDublicatesByPhone()[i].getPhones();
+			showArray[i] = name + "\r\n" + phones + "\r\n";
 		}
-				
-		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), showArray).sendToTarget();			
+		ShowList showList = new ShowList("Dublicates of contact:"
+				+ dublicatesContact.getContact().getId() + "\r\n"
+				+ dublicatesContact.getContact().getName() + "\r\n"
+				+ dublicatesContact.getContact().getPhones() + "\r\n"
+				,showArray);		
+		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), showList).sendToTarget();			
 	}	
-	
-	
-
 }

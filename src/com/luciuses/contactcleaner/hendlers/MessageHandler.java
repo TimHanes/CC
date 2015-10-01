@@ -3,6 +3,7 @@ package com.luciuses.contactcleaner.hendlers;
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.R;
 import com.luciuses.contactcleaner.components.*;
+import com.luciuses.contactcleaner.models.ShowList;
 import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.os.*;
@@ -26,30 +27,22 @@ public class MessageHandler extends Handler {
 		MessageType _whichChoos = MessageType.values()[msg.what];
 
 		switch (_whichChoos) {
-		case AddToLogView:
-			AddToLogView(msg);
-			break;
-		case ShowPopupForChooseAction:
-			ShowPopupForChooseAction(msg);
-			break;
+		
 		case SetTextToLogView:
 			SetTextToLogView(msg);
 			break;
-		case Finally:
-			Finally();
+		case AddToLogView:
+			AddToLogView(msg);
 			break;
 		case ShowProgress:
 			ShowProgress(msg);
 			break;
-		case SetProgressBar:
-			SetProgressBar(msg);
-			break;
 		case ShowListView:
 			ShowListView(msg);
+			break;			
+		case ShowPopupForChooseAction:
+			ShowPopupForChooseAction(msg);
 			break;
-		case ContactExecuted:
-			ContactExecuted(msg);
-			break;		
 		default:
 			break;
 		}
@@ -59,18 +52,18 @@ public class MessageHandler extends Handler {
 		OnClickListener _onButtonJoin = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				App.Instance().getPopup().MsgBoxClose();				
-				Executor.getResultHandler().getTread().Resume();
+				App.Instance().getPopup().MsgBoxClose();
 				Executor.setAction(ActionType.Join);
+				Executor.Resume();
 			}
 		};
 
 		OnClickListener _onButtonDelete = new OnClickListener() {
 			@Override
 			public void onClick(View v) {									
-				App.Instance().getPopup().MsgBoxClose();
-				Executor.getResultHandler().getTread().Resume();				
-				Executor.setAction(ActionType.Delete);				
+				App.Instance().getPopup().MsgBoxClose();				
+				Executor.setAction(ActionType.Delete);		
+				Executor.Resume();
 			}
 		};
 		
@@ -78,9 +71,8 @@ public class MessageHandler extends Handler {
 			@Override
 			public void onClick(View v) {
 				App.Instance().getPopup().MsgBoxClose();
-				Executor.getResultHandler().getTread().Resume();
 				Executor.setAction(ActionType.Ignore);
-				
+				Executor.Resume();				
 			}
 		};
 		App.Instance().getPopup().MsgBoxButtons("What do with:", msg.obj.toString() + " ?", "Delete", "Join", "Ignore",
@@ -91,30 +83,24 @@ public class MessageHandler extends Handler {
 	
 	private void ShowListView(Message msg) {
 		OnItemClickListener listener = new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {					
-				Executor.setClickPosition(position);
-				Executor.getResultHandler().getTread().Resume();
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
+				App.Instance().getPopup().MsgBoxClose();
+				Executor.setClickPosition(position);				
+				Executor.Resume();
 			}
 		};
+		
+		ShowList showList = (ShowList) msg.obj;		
+		App.Instance().getPopup().MsgBoxListView(showList, listener);
 
-		App.Instance().getPopup().MsgBoxListView("Duble contacts", (String[]) msg.obj, listener);
-
-	}
-
-	private void SetProgressBar(Message msg) {
-		App.Instance().getPopup().pb.setMax(msg.arg1);
-		App.Instance().getPopup().pb.setProgress(msg.arg2);
-	}
-
-	private void Finally() {
-		App.Instance().getPopup().MsgBoxClose();
 	}
 
 	private void ShowProgress(Message msg) {
 		View.OnClickListener cancel = new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) {				
 				Executor.getContactsHandler().setMarkFinish(true);
+				App.Instance().getPopup().MsgBoxClose();
 			}
 		};
 		App.Instance().getPopup().MsgBoxProgress("Processing...", msg.obj.toString(), true, msg.arg1, msg.arg2, cancel);
@@ -127,11 +113,4 @@ public class MessageHandler extends Handler {
 	private void AddToLogView(Message msg) {
 		_logView.append(msg.obj.toString());
 	}
-
-	private void ContactExecuted(Message msg) {
-		Executor.Resume();
-	}		
-
-	
-	
 }

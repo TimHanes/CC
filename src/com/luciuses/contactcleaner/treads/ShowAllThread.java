@@ -4,6 +4,7 @@ import com.luciuses.contactcleaner.*;
 import com.luciuses.contactcleaner.basis.*;
 import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.hendlers.*;
+import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.*;
 
 import android.net.Uri;
@@ -34,11 +35,13 @@ public class ShowAllThread extends BaseThread
 		Uri[] uris = dbProvider.getContactsUri();
 		String[] showArray = new String[uris.length];
 		for(int i = 0 ; i < uris.length; i++ ){
-			String name = contactsProvider.getNameByUri(uris[i]);
-			String phones =  contactsProvider.getPhonesByUri(uris[i]);
-			showArray[i] = name + phones;
+			Contact contact = contactsProvider.getContactByUri(uris[i]);			
+			showArray[i] = contact.getId()+"\r\n" +contact.getName() + "\r\n" + contact.getPhones() + "\r\n";
 		}
+		
+		ShowList showList = new ShowList("All Contacts with dublicates",showArray);
+		
 		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), 
-				showArray).sendToTarget();			
+				showList).sendToTarget();			
 	}			
 }

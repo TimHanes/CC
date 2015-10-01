@@ -21,32 +21,41 @@ public class ContactsHandler {
 		dbProvider = App.Instance().getDbProvider();
 		this.executor = executor;		
 	}
-
+	
 	public void setMarkFinish(boolean mFinish) {
 		this.mFinish = mFinish;
 	}
 	
 	public void Start() {
 				
-//		dbProvider.Clean();
+		dbProvider.Clean();
 
 		int contactCount = contactsProvider.getCount();
 
 		for (int position = 0; position < contactCount; position++) {
-			Contact contact = contactsProvider.getContactByPosition(position);
-			DisplayInfo(contactCount, position, contact);
-			Dublicates dublsOfCont = new SearchDublicateThread(contact, executor).getDublicates();
-			if (dublsOfCont != null) {
-				count++;
-				dbProvider.Save(dublsOfCont);
+			Contact contact = contactsProvider.getContactByPosition(position);							
+			SearchDublicateThread searchDublicateThread = new SearchDublicateThread(contact, executor);
+			searchDublicateThread.start();
+			
+			try {
+				searchDublicateThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			if (mFinish)
+			
+			Dublicates dubls = searchDublicateThread.getDublicates();
+			if (dubls != null) {								
+				count++;
+				dbProvider.Save(dubls);
+			}
+			if (mFinish)				
 				break;
+			ProgressInfo(contactCount, position, contact);	
+				
 		}
-		Message.obtain(executor.getMessageHandler(), MessageType.Finally.ordinal()).sendToTarget();
 	}
 
-	private void DisplayInfo(int contactCount, int position, Contact contact) {
+	private void ProgressInfo(int contactCount, int position, Contact contact) {
 
 		Message.obtain(executor.getMessageHandler(), MessageType.SetTextToLogView.ordinal(),
 				"work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget();

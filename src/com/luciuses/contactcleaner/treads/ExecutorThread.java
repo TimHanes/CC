@@ -15,7 +15,7 @@ public class ExecutorThread extends BaseThread
 	MessageHandler messageHandler;
 	ContactsHandler contactsHandler;
 	ResultHandler resultHandler;
-	private boolean flagFinished = false;
+	
 	private DbProvider dbProvider;
 	private ActionType action;
 
@@ -23,14 +23,6 @@ public class ExecutorThread extends BaseThread
 		this.dbProvider = App.Instance().getDbProvider();
 		messageHandler = new MessageHandler(this);
 		super.setName("ExecutorThread");
-	}
-	
-	public boolean isFlagFinished() {
-		return flagFinished;
-	}
-
-	public void setFlagFinished(boolean flagFinished) {
-		this.flagFinished = flagFinished;
 	}
 	
 	public MessageHandler getMessageHandler(){
@@ -60,7 +52,7 @@ public class ExecutorThread extends BaseThread
 	private void StartResultHandler(){
 		
 		resultHandler = new ResultHandler(this);
-		while(!flagFinished){				
+		while(dbProvider.getContactsUri().length > 0){				
 			resultHandler.ShowList();
 			this.Pause();
 			super.run();
@@ -69,18 +61,20 @@ public class ExecutorThread extends BaseThread
 			this.Pause();
 			super.run();
 			Uri uri = getUriFromDublicatesByPosition(dubl ,clickPosition);
-			resultHandler.ShowChooseAction(uri);
+			resultHandler.ShowChooseAction(dubl, uri);
 			this.Pause();
 			super.run();
-			resultHandler.Executed(dubl, uri);
-			
-			}		
+			resultHandler.Executed(dubl, uri);			
+		}		
 	}
 
 	private Uri getUriFromDublicatesByPosition(Dublicates dubl, Integer clickPosition) {
-		if (dubl.getUriDublicatesByName().length > clickPosition)
+		int countByName = 0;
+		if((dubl.getUriDublicatesByName()!= null)) 
+			countByName = dubl.getUriDublicatesByName().length;
+		if (countByName > clickPosition)
 			return dubl.getUriDublicatesByName()[clickPosition];		
-		return dubl.getUriDublicatesByPhone()[clickPosition - dubl.getUriDublicatesByName().length];				
+		return dubl.getUriDublicatesByPhone()[clickPosition - countByName];				
 	}
 
 	private Dublicates getDublicatesByPosition(Integer clickPosition) {

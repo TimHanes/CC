@@ -46,12 +46,13 @@ public class DbProvider {
 	}
 
 	public void Clean() {
-//		sdb.delete(DbHelper.DATABASE_TABLE, null, null);
+		sdb.delete(DbHelper.DATABASE_TABLE, null, null);
 	}
 	
 	public int ContactDelete(Uri uri) {
 		int count = 0;
 		Cursor cursor = getCursorByUri(uri);
+		cursor.moveToFirst();
 		Integer id = getIdByCursor(cursor);
 			if (id!=null) 
 				try {

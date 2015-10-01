@@ -54,19 +54,12 @@ public class ContactsProvider {
 	}
 
 	public String getPhonesByUri(Uri uri) {
+		
 		Cursor cursor = getCursorByUri(uri);
-		cursor.moveToFirst();
-		String phones = "";
-		Integer id = getIdByCursor(cursor);		
-		if (IsHasNamber(cursor)&(id!=null)) {
-			Cursor pCur = getCursorByPhoneId(id);
-			pCur.moveToFirst();
-			while (pCur.moveToNext()) {
-				phones += getPhoneByPhoneCursor(pCur) + "\r\n";
-			}
-			pCur.close();
-		}
-		cursor.close();
+		cursor.moveToFirst();		
+		Integer id = getIdByCursor(cursor);			
+		cursor.close();		
+		String phones = getContactPhone(id.toString());
 		return phones;
 	}
 
@@ -147,6 +140,8 @@ public class ContactsProvider {
 	}
 
 	public Contact[] getContactsByUris(Uri[] uris) {
+		if (uris == null)
+			return null;
 		Contact[] contacts = new Contact[uris.length];
 		for (int i = 0; i < uris.length; i++ ){
 			contacts[i] = getContactByUri(uris[i]);			
@@ -167,35 +162,6 @@ public class ContactsProvider {
 	private Cursor getCursorByUri(Uri uri) {
 		Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
 		return cur;
-	}
-
-	private String getPhoneByPhoneCursor(Cursor pCur) {
-		String phone;
-		try {
-			phone = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DATA));
-		} catch (Exception e) {
-			return "Phone is unable";
-		}
-		return phone;
-	}
-
-	private Cursor getCursorByPhoneId(int id) {
-		Cursor pCur = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-				ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
-		return pCur;
-	}
-
-	private boolean IsHasNamber(Cursor cur) {
-		int nam;
-		try {
-			nam = Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
-		} catch (Exception e) {
-			nam = 0;
-		}
-		if ( nam > 0) {
-			return false;
-		}
-		return true;
 	}
 
 	private Cursor getAllContactCursor() {
@@ -262,4 +228,28 @@ public class ContactsProvider {
 				(ContactsContract.Contacts._ID + " LIKE '" + id + "'"), null, null);
 		return cur;
 	}
+	
+	private String getContactPhone(String id) {
+	    Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+	    String[] projection = null;
+	    String where = ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?";
+	    String[] selectionArgs = new String[] { id };
+	    String sortOrder = null;
+	    Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);
+	    String phones = "";
+	    while (result.moveToNext()) {
+	    	
+	    	String phone = result.getString(result.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+	        if (phone != null) {  
+	        	phones += phone + "\r\n";	            
+	        }	        	       
+	    }
+	    result.close();
+	    return phones;
+	}
+
+	private Cursor managedQuery(Uri uri, String[] projection, String where, String[] selectionArgs, String sortOrder) {
+		Cursor cur = context.getContentResolver().query(uri, projection, where, selectionArgs, sortOrder);
+		return cur;
+	}		
 }

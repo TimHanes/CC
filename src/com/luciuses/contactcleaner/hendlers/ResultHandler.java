@@ -21,12 +21,6 @@ public class ResultHandler
 		dbProvider = App.Instance().getDbProvider();
 	}
 	
-	public void ByOnce()
-	{				
-		resultHandlerThread = new ResultHandlerByOnce(executor.getMessageHandler()).getTread();
-		resultHandlerThread.start();
-	}
-	
 	public void ShowList()
 	{		
 		resultHandlerThread = new ShowAllThread(executor.getMessageHandler());	
@@ -39,8 +33,8 @@ public class ResultHandler
 		resultHandlerThread.start();	
 	}
 	
-	public void ShowChooseAction(Uri uri){		
-		resultHandlerThread = new RequestActionThread(uri, executor.getMessageHandler());
+	public void ShowChooseAction(Dublicates dubl, Uri uri){		
+		resultHandlerThread = new RequestActionThread(dubl, uri, executor.getMessageHandler());
 		resultHandlerThread.start();
 	}
 	
@@ -81,9 +75,20 @@ public class ResultHandler
 	
 	private void UpdateContact(Uri contactUri) {
 		
-		Dublicates dublsOfCont = new SearchDublicateThread(contactUri, executor).getDublicates();
-		if (dublsOfCont != null) {
-			dbProvider.Save(dublsOfCont);
-		}		
+		
+		SearchDublicateThread searchDublicateThread = new SearchDublicateThread(contactUri, executor);
+		searchDublicateThread.start();
+		
+		try {
+			searchDublicateThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Dublicates dubls = searchDublicateThread.getDublicates();
+		if (dubls != null) {
+			dbProvider.Save(dubls);
+		}			
 	}
 }

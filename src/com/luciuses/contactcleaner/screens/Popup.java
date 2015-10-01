@@ -3,6 +3,7 @@ package com.luciuses.contactcleaner.screens;
 
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.R;
+import com.luciuses.contactcleaner.models.ShowList;
 
 import android.app.*;
 import android.util.*;
@@ -282,11 +283,11 @@ public class Popup
 	}
 	
 	
-	public void MsgBoxListView(String title, String[] uris, OnItemClickListener listener)
+	public void MsgBoxListView(ShowList showList, OnItemClickListener listener)
 	{
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, uris);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, showList.getBody());
 		invisible();
-		dialog.setTitle(title);
+		dialog.setTitle(showList.getHeader());
 		listView1.setVisibility(View.VISIBLE);
 		listView1.setAdapter(adapter);
 		listView1.setOnItemClickListener(listener);
