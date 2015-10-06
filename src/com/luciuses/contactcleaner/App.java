@@ -18,7 +18,7 @@ import android.widget.*;
 		private DbProvider dbProvider;
 		private Activity activity;
 	
-		App() 
+		private App() 
 		{}
 
 		public static App Instance()
@@ -48,14 +48,17 @@ import android.widget.*;
 			this.context = context;
 			popup = new Popup(activity);
 			dbProvider = new DbProvider(context);						
-			Button buttonStart = (Button)activity.findViewById(R.id.btn);						
+			Button buttonStart = (Button)activity.findViewById(R.id.btn);
+			final ExecutorThread executor = new ExecutorThread();
+			executor.start();
+			executor.Pause();
 			OnClickListener buttonStartListener = new OnClickListener(){				
 				@Override
-				public void onClick(View v) {					
-					new ExecutorThread().start();					
+				public void onClick(View v) {										
+					executor.Resume();				
 				}
 			};
-			buttonStart.setOnClickListener(buttonStartListener);						
-		}												
+			buttonStart.setOnClickListener(buttonStartListener);
+		}											
 	}
 

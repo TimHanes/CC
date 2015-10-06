@@ -2,7 +2,7 @@ package com.luciuses.contactcleaner.basis;
 
 	public class BaseThread extends Thread {
 		
-		boolean suspended = false;
+		boolean suspended = true;
 		
 		private Thread m_thread;
 		Object autoEvent;

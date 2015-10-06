@@ -33,8 +33,8 @@ public class ResultHandler
 		resultHandlerThread.start();	
 	}
 	
-	public void ShowChooseAction(Dublicates dubl, Uri uri){		
-		resultHandlerThread = new RequestActionThread(dubl, uri, executor.getMessageHandler());
+	public void ShowChooseAction(Uri uri){		
+		resultHandlerThread = new RequestActionThread(uri, executor.getMessageHandler());
 		resultHandlerThread.start();
 	}
 	
@@ -55,7 +55,7 @@ public class ResultHandler
 		case Delete:			
 			resultHandlerThread = new DeletedThread(dubl, uri, executor.getMessageHandler());
 			resultHandlerThread.start();		
-			UpdateContact(dubl.getContactUri());
+			UpdateContact(dubl, uri);
 			break;
 			
 		case Join:
@@ -73,10 +73,18 @@ public class ResultHandler
 				
 	}	
 	
-	private void UpdateContact(Uri contactUri) {
+	private void UpdateContact(Dublicates dubl, Uri deletedUri) {
 		
+		Uri uri = null;
+		if(dubl.getContactUri() != deletedUri) uri = dubl.getContactUri();
+		else {
+			if(dubl.getUriDublicatesByPhone() != null)
+				uri = dubl.getUriDublicatesByPhone()[0];
+			if(dubl.getUriDublicatesByName() != null)
+				uri = dubl.getUriDublicatesByName()[0];
+		}
 		
-		SearchDublicateThread searchDublicateThread = new SearchDublicateThread(contactUri, executor);
+		SearchDublicateThread searchDublicateThread = new SearchDublicateThread(uri, executor);
 		searchDublicateThread.start();
 		
 		try {

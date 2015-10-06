@@ -25,9 +25,8 @@ public class ContactsProvider {
 		Cursor cursor = getAllContactCursor();
 		cursor.moveToPosition(position);
 		String name = getNameByCursor(cursor);
-		Uri uri = getUriByCursor(cursor);
-		String phones = getPhonesByUri(uri);
 		int id = getIdByCursor(cursor);
+		String phones = getContactPhone(id+"");
 		Contact contact = new Contact(id, name, phones);
 		cursor.close();
 		return contact;
@@ -35,14 +34,14 @@ public class ContactsProvider {
 
 	public void ContactDelete(int id) {
 		Uri uri = getUriByContactId(id);
-		String name = getNameByUri(uri);
-		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "deleted:" + name + "\r\n").sendToTarget();//
+		Contact contact = getContactByUri(uri);	
+		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(),"Deleted: " + ContactToString(contact) + "\r\n").sendToTarget();//
 		context.getContentResolver().delete(uri, null, null);		
 	}
 	
 	public void ContactDelete(Uri uri) {		
-		String name = getNameByUri(uri);
-		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "deleted:" + name + "\r\n").sendToTarget();//
+		Contact contact = getContactByUri(uri);	
+		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Deleted: " + ContactToString(contact)).sendToTarget();//
 		context.getContentResolver().delete(uri, null, null);		
 	}
 
@@ -251,5 +250,9 @@ public class ContactsProvider {
 	private Cursor managedQuery(Uri uri, String[] projection, String where, String[] selectionArgs, String sortOrder) {
 		Cursor cur = context.getContentResolver().query(uri, projection, where, selectionArgs, sortOrder);
 		return cur;
-	}		
+	}	
+	
+	private String ContactToString(Contact contact){
+		return contact.getId() + "\r\n"  + contact.getName() + " " + contact.getPhones();		
+	}
 }

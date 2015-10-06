@@ -54,6 +54,7 @@ public class MessageHandler extends Handler {
 			public void onClick(View v) {
 				App.Instance().getPopup().MsgBoxClose();
 				Executor.setAction(ActionType.Join);
+				Executor.NextResultAction();
 				Executor.Resume();
 			}
 		};
@@ -62,7 +63,8 @@ public class MessageHandler extends Handler {
 			@Override
 			public void onClick(View v) {									
 				App.Instance().getPopup().MsgBoxClose();				
-				Executor.setAction(ActionType.Delete);		
+				Executor.setAction(ActionType.Delete);
+				Executor.NextResultAction();
 				Executor.Resume();
 			}
 		};
@@ -72,11 +74,12 @@ public class MessageHandler extends Handler {
 			public void onClick(View v) {
 				App.Instance().getPopup().MsgBoxClose();
 				Executor.setAction(ActionType.Ignore);
+				Executor.NextResultAction();
 				Executor.Resume();				
 			}
 		};
 		App.Instance().getPopup().MsgBoxButtons("What do with:", msg.obj.toString() + " ?", "Delete", "Join", "Ignore",
-				_onButtonDelete, _onButtonJoin, _onButtonIgnore, true);
+				_onButtonDelete, _onButtonJoin, _onButtonIgnore, false);
 	}
 	
 	
@@ -85,13 +88,14 @@ public class MessageHandler extends Handler {
 		OnItemClickListener listener = new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
 				App.Instance().getPopup().MsgBoxClose();
-				Executor.setClickPosition(position);				
+				Executor.setClickPosition(position);	
+				Executor.NextResultAction();
 				Executor.Resume();
 			}
 		};
 		
 		ShowList showList = (ShowList) msg.obj;		
-		App.Instance().getPopup().MsgBoxListView(showList, listener);
+		App.Instance().getPopup().MsgBoxListView("Choose contact", showList, listener);
 
 	}
 

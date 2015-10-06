@@ -283,14 +283,16 @@ public class Popup
 	}
 	
 	
-	public void MsgBoxListView(ShowList showList, OnItemClickListener listener)
+	public void MsgBoxListView(String title, ShowList showList, OnItemClickListener listener)
 	{
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, showList.getBody());
 		invisible();
-		dialog.setTitle(showList.getHeader());
+		dialog.setTitle(title);		
 		listView1.setVisibility(View.VISIBLE);
 		listView1.setAdapter(adapter);
 		listView1.setOnItemClickListener(listener);
+		txt1.setVisibility(View.VISIBLE);
+		txt1.setText(showList.getHeader());
 			
 		try
 		{

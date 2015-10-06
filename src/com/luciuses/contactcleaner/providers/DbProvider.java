@@ -19,8 +19,8 @@ public class DbProvider {
 	public DbProvider(Context context) {
 		dbHelper = new DbHelper(context, "database1.db", null, 1);
 		sdb = dbHelper.getReadableDatabase();
-	}
-
+	}	
+	
 	public void Save(Dublicates dublsOfCont) {
 		ContentValues newValues = PutInContent(dublsOfCont);
 		sdb.insert("UriDublicatesOfContact", null, newValues);

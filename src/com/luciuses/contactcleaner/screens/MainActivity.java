@@ -13,8 +13,15 @@ public class MainActivity extends Activity
 		{			
 			super.onCreate(bundle);
 			setContentView(R.layout.main);
-			App.Instance().Init(this,getApplicationContext());			
-		}				
+			App.Instance().Init(this,getApplicationContext());	
+		}	
+		
+		 @Override
+		    public void onDestroy(){
+			 android.os.Process.killProcess(android.os.Process.myPid());	       
+		        super.onDestroy();
+		    }
+		
 	}
 
 

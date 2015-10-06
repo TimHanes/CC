@@ -27,9 +27,9 @@ public class ContactsHandler {
 	}
 	
 	public void Start() {
-				
+		
 		dbProvider.Clean();
-
+		
 		int contactCount = contactsProvider.getCount();
 
 		for (int position = 0; position < contactCount; position++) {
@@ -50,8 +50,7 @@ public class ContactsHandler {
 			}
 			if (mFinish)				
 				break;
-			ProgressInfo(contactCount, position, contact);	
-				
+			ProgressInfo(contactCount, position, contact);					
 		}
 	}
 

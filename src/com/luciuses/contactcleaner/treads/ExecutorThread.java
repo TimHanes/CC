@@ -2,7 +2,7 @@ package com.luciuses.contactcleaner.treads;
 
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.basis.BaseThread;
-import com.luciuses.contactcleaner.components.ActionType;
+import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.hendlers.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.DbProvider;
@@ -15,7 +15,8 @@ public class ExecutorThread extends BaseThread
 	MessageHandler messageHandler;
 	ContactsHandler contactsHandler;
 	ResultHandler resultHandler;
-	
+	private int curentResultHandlerAction = 0;
+
 	private DbProvider dbProvider;
 	private ActionType action;
 
@@ -38,10 +39,14 @@ public class ExecutorThread extends BaseThread
 	}
 	
 	@Override
-	public void run()
-	{
-		StartContactHandler();
-		StartResultHandler();				
+	public void run() {
+		while (true) {
+			super.run();
+			StartContactHandler();
+			StartResultHandler();
+			this.Pause();
+			super.run();
+		}
 	}	
 
 	private void StartContactHandler(){
@@ -52,29 +57,61 @@ public class ExecutorThread extends BaseThread
 	private void StartResultHandler(){
 		
 		resultHandler = new ResultHandler(this);
+		Uri uri = null;
+		Dublicates dubl = null;
 		while(dbProvider.getContactsUri().length > 0){				
-			resultHandler.ShowList();
-			this.Pause();
-			super.run();
-			Dublicates dubl = getDublicatesByPosition(clickPosition);
-			resultHandler.ShowDublicates(dubl);
-			this.Pause();
-			super.run();
-			Uri uri = getUriFromDublicatesByPosition(dubl ,clickPosition);
-			resultHandler.ShowChooseAction(dubl, uri);
-			this.Pause();
-			super.run();
-			resultHandler.Executed(dubl, uri);			
+			
+			ResultHandlerActionType _whichChoos = ResultHandlerActionType.values()[curentResultHandlerAction];
+		
+			switch (_whichChoos) {
+			
+			case ShowList:
+				resultHandler.ShowList();
+				this.Pause();
+				super.run();
+				break;
+			case ShowDublicates:
+				dubl = getDublicatesByPosition(clickPosition);
+				resultHandler.ShowDublicates(dubl);
+				this.Pause();
+				super.run();
+				break;
+			case ShowChooseAction:
+				uri = getUriFromDublicatesByPosition(dubl ,clickPosition);
+				resultHandler.ShowChooseAction(uri);				
+				this.Pause();
+				super.run();
+				break;
+			case Executed:
+				resultHandler.Executed(dubl, uri);	
+				FirstResultAction();
+				break;			
+			default:
+				break;				
+			}			
 		}		
 	}
 
+	public void NextResultAction(){
+		curentResultHandlerAction++;
+	}
+	
+	public void FirstResultAction(){
+		curentResultHandlerAction = 0;
+	}
+	
 	private Uri getUriFromDublicatesByPosition(Dublicates dubl, Integer clickPosition) {
 		int countByName = 0;
+		int countByPhone = 0;
 		if((dubl.getUriDublicatesByName()!= null)) 
-			countByName = dubl.getUriDublicatesByName().length;
-		if (countByName > clickPosition)
-			return dubl.getUriDublicatesByName()[clickPosition];		
-		return dubl.getUriDublicatesByPhone()[clickPosition - countByName];				
+			countByName = dubl.getUriDublicatesByName().length;		
+		if((dubl.getUriDublicatesByPhone()!= null)) 
+			countByName = dubl.getUriDublicatesByPhone().length;
+		if (clickPosition < countByName)
+			return dubl.getUriDublicatesByName()[clickPosition];	
+		if (clickPosition < countByName + countByPhone)
+			return dubl.getUriDublicatesByPhone()[clickPosition];
+		return dubl.getContactUri();				
 	}
 
 	private Dublicates getDublicatesByPosition(Integer clickPosition) {

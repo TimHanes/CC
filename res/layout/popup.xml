@@ -11,13 +11,22 @@
         android:gravity="center"
         android:orientation="vertical" >
 
+         <TextView
+                    android:id="@+id/mbtext1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="title"
+                    android:textSize="10pt"
+                    android:visibility="gone" />
+        
         <ListView
-            android:id="@+id/listView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
-        </ListView>
-
+                android:id="@+id/listView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+            
+        
         <ProgressBar
             android:id="@+id/mbpbar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -38,16 +47,7 @@
                 android:background="@drawable/cell_shape"
                 android:gravity="center"
                 android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/mbtext1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="title"
-                    android:textSize="10pt"
-                    android:visibility="gone" />
-
+                            
                 <EditText
                     android:id="@+id/mbedit1"
                     android:layout_width="fill_parent"
@@ -55,6 +55,8 @@
                     android:gravity="center"
                     android:visibility="gone" />
             </LinearLayout>
+
+          
 
             <LinearLayout
                 android:layout_width="fill_parent"
