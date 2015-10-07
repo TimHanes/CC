@@ -14,7 +14,7 @@ public class ContactsHandler {
 	private DbProvider dbProvider;
 	private int count = 0;
 	private ContactsProvider contactsProvider;
-	private boolean mFinish;
+	
 
 	public ContactsHandler(ExecutorThread executor) {
 		contactsProvider = new ContactsProvider(executor.getMessageHandler());
@@ -22,16 +22,10 @@ public class ContactsHandler {
 		this.executor = executor;		
 	}
 	
-	public void setMarkFinish(boolean mFinish) {
-		this.mFinish = mFinish;
-	}
-	
 	public void Start() {
 		
-		dbProvider.Clean();
-		
+		executor.setmFinish(false);
 		int contactCount = contactsProvider.getCount();
-
 		for (int position = 0; position < contactCount; position++) {
 			Contact contact = contactsProvider.getContactByPosition(position);							
 			SearchDublicateThread searchDublicateThread = new SearchDublicateThread(contact, executor);
@@ -48,7 +42,7 @@ public class ContactsHandler {
 				count++;
 				dbProvider.Save(dubls);
 			}
-			if (mFinish)				
+			if (executor.ismFinish())				
 				break;
 			ProgressInfo(contactCount, position, contact);					
 		}

@@ -10,6 +10,7 @@ import android.util.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class Popup
@@ -287,12 +288,16 @@ public class Popup
 	{
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, showList.getBody());
 		invisible();
-		dialog.setTitle(title);		
+				
+		dialog.setTitle(title);	
+		btn1.setText("CANCEL");	
+		btn1.setVisibility(View.VISIBLE);
 		listView1.setVisibility(View.VISIBLE);
 		listView1.setAdapter(adapter);
 		listView1.setOnItemClickListener(listener);
 		txt1.setVisibility(View.VISIBLE);
 		txt1.setText(showList.getHeader());
+		btn1.setOnClickListener(new View.OnClickListener(){public void onClick(View v){dialog.cancel();}});
 			
 		try
 		{
@@ -311,7 +316,7 @@ public class Popup
 		txt1.setVisibility(View.VISIBLE);
 		txt2.setVisibility(View.VISIBLE);
 		txt1.setText(msg);
-		txt2.setText("Whole: "+arg1+"/ Checked: "+arg2);
+		txt2.setText("Whole: "+arg1+"/ Processed: "+arg2);
 		pb.setVisibility(View.VISIBLE);
 		btn1.setVisibility(View.VISIBLE);
 		btn1.setText("CANCEL");

@@ -7,7 +7,10 @@ import com.luciuses.contactcleaner.hendlers.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.DbProvider;
 
+import android.R;
 import android.net.Uri;
+import android.os.Message;
+import android.widget.Spinner;
 
 public class ExecutorThread extends BaseThread
 {
@@ -19,6 +22,7 @@ public class ExecutorThread extends BaseThread
 
 	private DbProvider dbProvider;
 	private ActionType action;
+	private boolean mFinish;
 
 	public ExecutorThread(){		
 		this.dbProvider = App.Instance().getDbProvider();
@@ -42,7 +46,15 @@ public class ExecutorThread extends BaseThread
 	public void run() {
 		while (true) {
 			super.run();
-			StartContactHandler();
+			
+			if(dbProvider.getContactsUri().length == 0){
+				Options options = new Options();
+				if ((options.ByName) | (options.ByPhone))
+					StartContactHandler();
+				else 
+					Message.obtain(messageHandler, MessageType.ShowToast.ordinal(),
+						"Set options for choosing please!").sendToTarget();				
+				}
 			StartResultHandler();
 			this.Pause();
 			super.run();
@@ -66,6 +78,7 @@ public class ExecutorThread extends BaseThread
 			switch (_whichChoos) {
 			
 			case ShowList:
+				
 				resultHandler.ShowList();
 				this.Pause();
 				super.run();
@@ -135,6 +148,14 @@ public class ExecutorThread extends BaseThread
 
 	public void setAction(ActionType action) {
 		this.action = action;
+	}
+
+	public boolean ismFinish() {
+		return mFinish;
+	}
+
+	public void setmFinish(boolean mFinish) {
+		this.mFinish = mFinish;
 	}
 
 	

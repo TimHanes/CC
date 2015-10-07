@@ -48,17 +48,27 @@ import android.widget.*;
 			this.context = context;
 			popup = new Popup(activity);
 			dbProvider = new DbProvider(context);						
-			Button buttonStart = (Button)activity.findViewById(R.id.btn);
+			Button buttonReScan = (Button)activity.findViewById(R.id.btnStart);
+			Button buttonContinue = (Button)activity.findViewById(R.id.btnContinue);
 			final ExecutorThread executor = new ExecutorThread();
 			executor.start();
 			executor.Pause();
-			OnClickListener buttonStartListener = new OnClickListener(){				
+			OnClickListener buttonContinueListener = new OnClickListener(){				
 				@Override
-				public void onClick(View v) {										
+				public void onClick(View v) {
+					executor.FirstResultAction();
 					executor.Resume();				
 				}
 			};
-			buttonStart.setOnClickListener(buttonStartListener);
+			OnClickListener buttonReScanListener = new OnClickListener(){				
+				@Override
+				public void onClick(View v) {
+					dbProvider.Clean();
+					executor.Resume();				
+				}
+			};
+			buttonReScan.setOnClickListener(buttonReScanListener);
+			buttonContinue.setOnClickListener(buttonContinueListener);
 		}											
 	}
 

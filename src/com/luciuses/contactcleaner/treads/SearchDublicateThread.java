@@ -110,12 +110,9 @@ public class SearchDublicateThread extends BaseThread {
 		}
 		if (contactsUri.isEmpty()) {
 			return null;
-		}
-		Object[] contUriArrObj = contactsUri.toArray();
-		Uri[] contUriArrUri = new Uri[contUriArrObj.length];
-		for (int i = 0; i < contUriArrObj.length; i++) {
-			contUriArrUri[i] = (Uri) contUriArrObj[i];
-		}
+		}		
+		Uri[] contUriArrUri = new Uri[contactsUri.size()];
+		contactsUri.toArray(contUriArrUri);		
 		return contUriArrUri;
 	}
 

@@ -42,10 +42,18 @@ public class MessageHandler extends Handler {
 			break;			
 		case ShowPopupForChooseAction:
 			ShowPopupForChooseAction(msg);
-			break;
+			break;		
+		case ShowToast:
+			ShowToast(msg);
+			break;	
 		default:
 			break;
 		}
+	}
+
+	private void ShowToast(Message msg) {
+		Toast toast = Toast.makeText(App.Instance().getContext(), msg.obj.toString(), Toast.LENGTH_SHORT); 
+				toast.show(); 		
 	}
 
 	private void ShowPopupForChooseAction(Message msg) {		
@@ -78,8 +86,8 @@ public class MessageHandler extends Handler {
 				Executor.Resume();				
 			}
 		};
-		App.Instance().getPopup().MsgBoxButtons("What do with:", msg.obj.toString() + " ?", "Delete", "Join", "Ignore",
-				_onButtonDelete, _onButtonJoin, _onButtonIgnore, false);
+		App.Instance().getPopup().MsgBoxButtons("What do with:", msg.obj.toString() + " ?", "Delete", "Cancel",
+				_onButtonDelete, _onButtonIgnore);
 	}
 	
 	
@@ -102,8 +110,8 @@ public class MessageHandler extends Handler {
 	private void ShowProgress(Message msg) {
 		View.OnClickListener cancel = new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {				
-				Executor.getContactsHandler().setMarkFinish(true);
+			public void onClick(View v) {					
+				Executor.setmFinish(true);
 				App.Instance().getPopup().MsgBoxClose();
 			}
 		};

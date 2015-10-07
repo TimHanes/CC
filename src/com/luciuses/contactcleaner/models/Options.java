@@ -12,10 +12,10 @@ import android.widget.*;
 		{
 			CheckBox Byname=(CheckBox)App.Instance().getActivity().findViewById(R.id.byname);
 			CheckBox Byphone=(CheckBox)App.Instance().getActivity().findViewById(R.id.byphone);
-			CheckBox Bdvanced=(CheckBox)App.Instance().getActivity().findViewById(R.id.advanced);
+//			CheckBox Bdvanced=(CheckBox)App.Instance().getActivity().findViewById(R.id.advanced);
 			ByName = Byname.isChecked();
 			ByPhone = Byphone.isChecked();
-			Advanced = Bdvanced.isChecked();
+//			Advanced = Bdvanced.isChecked();
 		}		
 		public boolean ByName ;
 		public boolean ByPhone ;

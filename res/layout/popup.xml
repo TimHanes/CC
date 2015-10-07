@@ -11,22 +11,22 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-         <TextView
-                    android:id="@+id/mbtext1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="title"
-                    android:textSize="10pt"
-                    android:visibility="gone" />
-        
+        <TextView
+            android:id="@+id/mbtext1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="title"
+            android:textSize="10pt"
+            android:visibility="gone" />
+
         <ListView
-                android:id="@+id/listView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-            
-        
+            android:id="@+id/listView1"
+           android:layout_width="match_parent"
+        android:layout_height="0dp" 
+        android:layout_weight="1" 
+            android:visibility="gone" />
+
         <ProgressBar
             android:id="@+id/mbpbar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -35,106 +35,82 @@
             android:indeterminate="true"
             android:visibility="gone" />
 
+        <EditText
+            android:id="@+id/mbedit1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/mbtext2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="text"
+            android:textSize="10pt"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/mbedit2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="horizontal" >
 
-            <LinearLayout
+            <Button
+                android:id="@+id/mbbtn1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/cell_shape"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" >
-                            
-                <EditText
-                    android:id="@+id/mbedit1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:visibility="gone" />
-            </LinearLayout>
+                android:text="YES"
+                android:visibility="gone" 
+                />
 
-          
-
-            <LinearLayout
+            <Button
+                android:id="@+id/mbbtn2"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/cell_shape"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:text="NO"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/mbtext2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="text"
-                    android:textSize="10pt"
-                    android:visibility="gone" />
-
-                <EditText
-                    android:id="@+id/mbedit2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
+            <Button
+                android:id="@+id/mbbtn3"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="horizontal" >
+                android:text="CANCEL"
+                android:visibility="gone" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/mbbtn1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="YES"
-                    android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
 
-                <Button
-                    android:id="@+id/mbbtn2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="NO"
-                    android:visibility="gone" />
-
-                <Button
-                    android:id="@+id/mbbtn3"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="CANCEL"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <CheckBox
+                android:id="@+id/checksave"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal" >
+                android:visibility="gone" />
 
-                <CheckBox
-                    android:id="@+id/checksave"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/chvsave"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-for all"
-                    android:visibility="gone" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/chvsave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-for all"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

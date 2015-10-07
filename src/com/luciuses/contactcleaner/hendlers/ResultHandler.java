@@ -23,7 +23,7 @@ public class ResultHandler
 	
 	public void ShowList()
 	{		
-		resultHandlerThread = new ShowAllThread(executor.getMessageHandler());	
+		resultHandlerThread = new ShowAllThread(executor);	
 		resultHandlerThread.start();
 	}
 	

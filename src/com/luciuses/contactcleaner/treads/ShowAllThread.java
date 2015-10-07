@@ -1,5 +1,8 @@
 package com.luciuses.contactcleaner.treads;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.luciuses.contactcleaner.*;
 import com.luciuses.contactcleaner.basis.*;
 import com.luciuses.contactcleaner.components.*;
@@ -15,11 +18,11 @@ public class ShowAllThread extends BaseThread
 	
 	private DbProvider dbProvider;
 	private ContactsProvider contactsProvider;
-	private MessageHandler messageHandler;
+	private ExecutorThread executor;
 	
-	public ShowAllThread(MessageHandler messageHandler){
-		contactsProvider = new ContactsProvider(messageHandler);
-		this.messageHandler = messageHandler;
+	public ShowAllThread(ExecutorThread executor){
+		this.executor = executor;		
+		contactsProvider = new ContactsProvider(executor.getMessageHandler());		
 		dbProvider = App.Instance().getDbProvider();	
 		super.setName("ShowAllThread");
 	}
@@ -33,15 +36,22 @@ public class ShowAllThread extends BaseThread
 
 	private void ShowList(DbProvider dbProvider){	
 		Uri[] uris = dbProvider.getContactsUri();
-		String[] showArray = new String[uris.length];
-		for(int i = 0 ; i < uris.length; i++ ){
+		
+		ArrayList<String> contacts = new ArrayList<String>();
+		executor.setmFinish(false);
+		for(int i = 0 ; i < uris.length; i++ ){			
 			Contact contact = contactsProvider.getContactByUri(uris[i]);			
-			showArray[i] = contact.getId()+"\r\n" +contact.getName() + "\r\n" + contact.getPhones() + "\r\n";
+			contacts.add(contact.getId()+"\r\n" +contact.getName() + "\r\n" + contact.getPhones() + "\r\n");
+			Message.obtain(executor.getMessageHandler(), MessageType.ShowProgress.ordinal(), uris.length, i,
+					"Create List. Please wait").sendToTarget();
+			if(executor.ismFinish())
+				break;
 		}
+		String[] showArray = new String[contacts.size()];
+		contacts.toArray(showArray);
 		
-		ShowList showList = new ShowList("All Contacts with dublicates",showArray);
-		
-		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), 
+		ShowList showList = new ShowList("All Contacts with dublicates",showArray);		
+		Message.obtain (executor.getMessageHandler(), MessageType.ShowListView.ordinal(), 
 				showList).sendToTarget();			
 	}			
 }
