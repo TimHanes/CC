@@ -1,12 +1,10 @@
 package com.luciuses.contactcleaner.treads;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.luciuses.contactcleaner.*;
 import com.luciuses.contactcleaner.basis.*;
 import com.luciuses.contactcleaner.components.*;
-import com.luciuses.contactcleaner.hendlers.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.*;
 

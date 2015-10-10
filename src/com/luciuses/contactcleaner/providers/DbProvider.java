@@ -1,6 +1,6 @@
 package com.luciuses.contactcleaner.providers;
 
-import com.luciuses.contactcleaner.Functions.UriFunctions;
+import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.basis.DbHelper;
 import com.luciuses.contactcleaner.models.Dublicates;
 
@@ -14,10 +14,10 @@ import android.text.TextUtils;
 public class DbProvider {	
 	private SQLiteDatabase sdb;
 	private DbHelper dbHelper;
-	private UriFunctions uriFunctions = new UriFunctions();
+	private Functions uriFunctions = new Functions();
 
 	public DbProvider(Context context) {
-		dbHelper = new DbHelper(context, "database1.db", null, 1);
+		dbHelper = new DbHelper(context, "database2.db", null, 1);
 		sdb = dbHelper.getReadableDatabase();
 	}	
 	
@@ -87,6 +87,8 @@ public class DbProvider {
 	private ContentValues PutInContent(Dublicates dublsOfCont) {
 		ContentValues newValues = new ContentValues();
 		newValues.put(DbHelper.CONTACT_URI, dublsOfCont.getContactUri().toString());
+		
+		newValues.put(DbHelper.OPTIONS, dublsOfCont.getOptions());
 
 		Uri[] urisDublArr = dublsOfCont.getUriDublicatesByName();
 		if (urisDublArr != null) {
@@ -105,7 +107,7 @@ public class DbProvider {
 	private Cursor getCursorByUri(Uri uri) {
 		
 		Cursor cursor = sdb.query(DbHelper.DATABASE_TABLE,
-				new String[] { DbHelper._ID, DbHelper.CONTACT_URI, DbHelper.URI_DUBLICATES_BY_NAME,
+				new String[] { DbHelper._ID, DbHelper.CONTACT_URI, DbHelper.OPTIONS, DbHelper.URI_DUBLICATES_BY_NAME,
 						DbHelper.URI_DUBLICATES_BY_PHONE },
 				"contactUri = ?", new String[] { uri.toString() }, null, null, null);
 		return cursor;
@@ -113,6 +115,7 @@ public class DbProvider {
 
 	private Dublicates getDublicatesOfContactByCursor(Cursor cursor) {
 		Uri contactUri = Uri.parse(cursor.getString(cursor.getColumnIndex(DbHelper.CONTACT_URI)));
+		int options = cursor.getInt(cursor.getColumnIndex(DbHelper.OPTIONS));
 		String DublicatesByName = cursor.getString(cursor.getColumnIndex(DbHelper.URI_DUBLICATES_BY_NAME));
 		String DublicatesByPhone = cursor.getString(cursor.getColumnIndex(DbHelper.URI_DUBLICATES_BY_PHONE));
 		Uri[] uriDublicatesByName = null;
@@ -123,8 +126,8 @@ public class DbProvider {
 			uriDublicatesByName = uriFunctions.StpingToUri(strUris);
 		}
 		if (DublicatesByPhone != null)
-			uriDublicatesByPhone = uriFunctions.StpingToUri(TextUtils.split(DublicatesByPhone, " "));
-		return new Dublicates(contactUri, uriDublicatesByName, uriDublicatesByPhone);
+			uriDublicatesByPhone = uriFunctions.StpingToUri(TextUtils.split(DublicatesByPhone, " "));		
+		return new Dublicates(contactUri, options, uriDublicatesByName, uriDublicatesByPhone);
 	}
 
 	private Cursor getCursorContacts() {

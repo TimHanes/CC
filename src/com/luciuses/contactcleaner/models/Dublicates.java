@@ -5,11 +5,13 @@ import android.net.Uri;
 	public class Dublicates
 	{
 		private Uri contactUri;
+		private int options;
 		private Uri[] uriDublicatesByName ;
 		private Uri[] uriDublicatesByPhone ;
 		
-		public Dublicates (Uri contactUri, Uri[] uriDublsByName, Uri[] uriDublsByPhone)
+		public Dublicates (Uri contactUri, int options, Uri[] uriDublsByName, Uri[] uriDublsByPhone)
 		{
+			setOptions(options);
 			setUriDublicatesByPhone(uriDublsByPhone);
 			setUriDublicatesByName(uriDublsByName);
 			setContactUri(contactUri);
@@ -38,5 +40,15 @@ import android.net.Uri;
 
 		public void setUriDublicatesByPhone(Uri[] uriDublicatesByPhone) {
 			this.uriDublicatesByPhone = uriDublicatesByPhone;
+		}
+
+
+		public int getOptions() {
+			return options;
+		}
+
+
+		public void setOptions(int options) {
+			this.options = options;
 		}				
 	}

@@ -3,6 +3,7 @@ package com.luciuses.contactcleaner.treads;
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.basis.BaseThread;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
+import com.luciuses.contactcleaner.models.Contact;
 import com.luciuses.contactcleaner.models.Dublicates;
 import com.luciuses.contactcleaner.providers.ContactsProvider;
 import com.luciuses.contactcleaner.providers.DbProvider;
@@ -26,8 +27,9 @@ public class DeletedThread extends BaseThread {
 
 	@Override
 	public void run()
-	{				
-		contactsProvider.ContactDelete(uri);		
+	{	
+		Contact contact = contactsProvider.getContactByUri(uri);			
+		contactsProvider.ContactDelete(contact.getId());		
 		dbProvider.ContactDelete(dubl.getContactUri());	
 	}
 }

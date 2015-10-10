@@ -10,7 +10,6 @@ import android.util.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
-import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class Popup

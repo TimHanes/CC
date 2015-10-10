@@ -1,6 +1,7 @@
 package com.luciuses.contactcleaner.providers;
 
 import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
 import com.luciuses.contactcleaner.models.Contact;
@@ -10,6 +11,9 @@ import com.luciuses.contactcleaner.models.DublicatesContact;
 import android.content.*;
 import android.database.*;
 import android.provider.*;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.RawContacts.Data;
+import android.telephony.PhoneNumberUtils;
 import android.net.*;
 import android.os.Message;
 
@@ -23,25 +27,29 @@ public class ContactsProvider {
 
 	public Contact getContactByPosition(int position) {
 		Cursor cursor = getAllContactCursor();
-		cursor.moveToPosition(position);
+		cursor.moveToPosition(position);		
+		Integer id = getIdByCursor(cursor);
+		if(id == null) 
+			return null;
 		String name = getNameByCursor(cursor);
-		int id = getIdByCursor(cursor);
 		String phones = getContactPhone(id+"");
 		Contact contact = new Contact(id, name, phones);
 		cursor.close();
 		return contact;
 	}
 
-	public void ContactDelete(int id) {
+	public boolean ContactDelete(int id) {
 		Uri uri = getUriByContactId(id);
-		Contact contact = getContactByUri(uri);	
-		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(),"Deleted: " + ContactToString(contact) + "\r\n").sendToTarget();//
-		context.getContentResolver().delete(uri, null, null);		
+		if(uri == null) 
+			return false;
+		ContactDelete(uri);
+		return true;
 	}
 	
 	public void ContactDelete(Uri uri) {		
 		Contact contact = getContactByUri(uri);	
-		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Deleted: " + ContactToString(contact)).sendToTarget();//
+		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Deleted: " 
+		+ new Functions().ContactToString(contact)).sendToTarget();//
 		context.getContentResolver().delete(uri, null, null);		
 	}
 
@@ -57,13 +65,17 @@ public class ContactsProvider {
 		Cursor cursor = getCursorByUri(uri);
 		cursor.moveToFirst();		
 		Integer id = getIdByCursor(cursor);			
-		cursor.close();		
+		cursor.close();
+		if (id == null)
+			return null;
 		String phones = getContactPhone(id.toString());
 		return phones;
 	}
 
 	public Uri[] getContactsUriByName(String selname, boolean ignorecase) {
 		Cursor cursor = getCursorByName(selname, ignorecase);
+		if(cursor == null)
+			return null;
 		Uri[] contactsUri = new Uri[cursor.getCount()];
 		cursor.moveToFirst(); 
 		for(int i = 0; i < cursor.getCount(); i++, cursor.moveToNext() ){
@@ -75,7 +87,10 @@ public class ContactsProvider {
 	}
 
 	public Contact getContactByUri(Uri uri) {
-		Contact contact = new Contact(getIdByUri(uri), getNameByUri(uri), getPhonesByUri(uri));
+		Integer id = getIdByUri(uri);
+		if(id == null) 
+			return null;
+		Contact contact = new Contact(id, getNameByUri(uri), getPhonesByUri(uri));
 		return contact;
 	}
 
@@ -108,6 +123,8 @@ public class ContactsProvider {
 
 	public Uri getUriByContactId(int id) {
 		Cursor cur = getCursorByContactId(id);
+		if(cur == null) 
+			return null;
 		cur.moveToFirst();
 		Uri uri = getUriByCursor(cur);
 		cur.close();
@@ -127,7 +144,9 @@ public class ContactsProvider {
 		return strUris;
 	}
 	
-	public DublicatesContact getDublicatesContact(Dublicates dublicates){			
+	public DublicatesContact getDublicatesContact(Dublicates dublicates){	
+		if(dublicates==null)
+			return null;
 		Uri contactUri = dublicates.getContactUri();
 		Uri[] urisByPhone = dublicates.getUriDublicatesByPhone();
 		Uri[] urisByName = dublicates.getUriDublicatesByName();
@@ -192,13 +211,11 @@ public class ContactsProvider {
 
 	private Uri[] getUrisByCursor(Cursor cur) {
 		Uri[] contactsUri = new Uri[cur.getCount()];
-		if (cur.moveToFirst()) {
-			int c = 0;
-			do {
+		cur.moveToFirst();
+		for(int i = 0; i < cur.getCount(); i++,cur.moveToNext()){			
 				Uri uri = getUriByCursor(cur);
-				contactsUri[c] = uri;
-				c++;
-			} while (cur.moveToNext());
+				contactsUri[i] = uri;
+				i++;			
 		}
 		return contactsUri;
 	}
@@ -208,23 +225,31 @@ public class ContactsProvider {
 		String name;
 		try {
 			name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			return "This Contact is removed";
+		} catch (Exception e) {		
+			return null;
 		}
 		return name;
 	}
 
-	private Cursor getCursorByPhone(String phone) {
-		Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
-		Cursor cur = getCursorByUri(contactUri);
-		return cur;
+	private Cursor getCursorByPhone(String sourcePhoneNumber) {
+		
+		String phoneNumber = PhoneNumberUtils.stripSeparators(sourcePhoneNumber);
+		String[] projection = new String[] { ContactsContract.Data.CONTACT_ID, ContactsContract.Contacts.LOOKUP_KEY, ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts.STARRED, ContactsContract.Contacts.CONTACT_STATUS, ContactsContract.Contacts.CONTACT_PRESENCE };
+		String selection = "PHONE_NUMBERS_EQUAL(" + Phone.NUMBER + ",?) AND " + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "'";
+		String[] selectionArgs = new String[] { phoneNumber };
+		Cursor cursor = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);				
+		return cursor;
 	}
 
 	private Cursor getCursorByContactId(int id) {
-		Cursor cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,
-				(ContactsContract.Contacts._ID + " LIKE '" + id + "'"), null, null);
+		
+		Cursor cur;
+		try {
+			cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,
+					(ContactsContract.Contacts._ID + " LIKE '" + id + "'"), null, null);
+		} catch (Exception e) {
+			return null;
+		}		
 		return cur;
 	}
 	
@@ -235,6 +260,7 @@ public class ContactsProvider {
 	    String[] selectionArgs = new String[] { id };
 	    String sortOrder = null;
 	    Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);
+	    if( result == null) return null;
 	    String phones = "";
 	    while (result.moveToNext()) {
 	    	
@@ -244,15 +270,17 @@ public class ContactsProvider {
 	        }	        	       
 	    }
 	    result.close();
+	    if( phones == "") return null;
 	    return phones;
 	}
 
 	private Cursor managedQuery(Uri uri, String[] projection, String where, String[] selectionArgs, String sortOrder) {
-		Cursor cur = context.getContentResolver().query(uri, projection, where, selectionArgs, sortOrder);
+		Cursor cur;
+		try {
+			cur = context.getContentResolver().query(uri, projection, where, selectionArgs, sortOrder);
+		} catch (Exception e) {
+			return null;
+		}
 		return cur;
 	}	
-	
-	private String ContactToString(Contact contact){
-		return contact.getId() + "\r\n"  + contact.getName() + " " + contact.getPhones();		
-	}
 }

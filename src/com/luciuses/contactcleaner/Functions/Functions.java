@@ -1,9 +1,11 @@
 package com.luciuses.contactcleaner.Functions;
 
+import com.luciuses.contactcleaner.models.Contact;
+
 import android.net.Uri;
 import android.text.TextUtils;
  
- public class UriFunctions {
+ public class Functions {
  	
 	public Uri[] StpingToUri(String[] uriStr){
 		Uri[] uri = new Uri[uriStr.length];
@@ -26,4 +28,10 @@ import android.text.TextUtils;
 		}		
 		return uriStr;
 	}
+	
+	public String ContactToString(Contact contact){
+		return contact.getId() + "\r\n" + contact.getName() + "\r\n" + contact.getPhones();		
+	}
+	
+	
 }

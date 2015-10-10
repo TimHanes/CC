@@ -1,5 +1,6 @@
 package com.luciuses.contactcleaner.treads;
 
+import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.basis.BaseThread;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
@@ -32,10 +33,10 @@ public class RequestActionThread extends BaseThread{
 
 	private void RequestAction(Uri uri) {
 		
-		Contact contact = contactsProvider.getContactByUri(uri);		
+		Contact contact = contactsProvider.getContactByUri(uri);
+		
 		Message.obtain(messageHandler, MessageType.ShowPopupForChooseAction.ordinal(),
-					"Contact:" + contact.getName() + "\r\n" + contact.getPhones())
-					.sendToTarget();//		
+					"Contact:" + new Functions().ContactToString(contact)).sendToTarget();//		
 	}
 }
 

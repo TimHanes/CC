@@ -28,8 +28,8 @@ public class MessageHandler extends Handler {
 
 		switch (_whichChoos) {
 		
-		case SetTextToLogView:
-			SetTextToLogView(msg);
+		case SetButtonsApp:
+			SetButtonsApp(msg);
 			break;
 		case AddToLogView:
 			AddToLogView(msg);
@@ -45,6 +45,9 @@ public class MessageHandler extends Handler {
 			break;		
 		case ShowToast:
 			ShowToast(msg);
+			break;
+		case Finally:
+			App.Instance().getPopup().MsgBoxClose();
 			break;	
 		default:
 			break;
@@ -57,16 +60,7 @@ public class MessageHandler extends Handler {
 	}
 
 	private void ShowPopupForChooseAction(Message msg) {		
-		OnClickListener _onButtonJoin = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				App.Instance().getPopup().MsgBoxClose();
-				Executor.setAction(ActionType.Join);
-				Executor.NextResultAction();
-				Executor.Resume();
-			}
-		};
-
+		
 		OnClickListener _onButtonDelete = new OnClickListener() {
 			@Override
 			public void onClick(View v) {									
@@ -118,8 +112,17 @@ public class MessageHandler extends Handler {
 		App.Instance().getPopup().MsgBoxProgress("Processing...", msg.obj.toString(), true, msg.arg1, msg.arg2, cancel);
 	}
 
-	private void SetTextToLogView(Message msg) {
-		_logView.setText(msg.obj.toString(), TextView.BufferType.NORMAL);
+	private void SetButtonsApp(Message msg) {
+		Button buttonReScan = (Button)App.Instance().getActivity().findViewById(R.id.btnStart);			
+		Button buttonContinue = (Button)App.Instance().getActivity().findViewById(R.id.btnContinue);
+		if(App.Instance().getDbProvider().getContactsUri().length > 0){
+			buttonReScan.setText("RESCAN");
+			buttonContinue.setVisibility(View.VISIBLE);
+		}
+		else{
+			buttonReScan.setText("SCAN");
+			buttonContinue.setVisibility(View.GONE);
+		}
 	}
 
 	private void AddToLogView(Message msg) {

@@ -48,11 +48,17 @@ import android.widget.*;
 			this.context = context;
 			popup = new Popup(activity);
 			dbProvider = new DbProvider(context);						
-			Button buttonReScan = (Button)activity.findViewById(R.id.btnStart);
+			Button buttonReScan = (Button)activity.findViewById(R.id.btnStart);			
 			Button buttonContinue = (Button)activity.findViewById(R.id.btnContinue);
+			if(dbProvider.getContactsUri().length > 0){
+				buttonReScan.setText("RESCAN");
+				buttonContinue.setVisibility(View.VISIBLE);
+			}
 			final ExecutorThread executor = new ExecutorThread();
-			executor.start();
 			executor.Pause();
+			executor.FirstResultAction();
+			executor.start();
+			
 			OnClickListener buttonContinueListener = new OnClickListener(){				
 				@Override
 				public void onClick(View v) {
@@ -64,6 +70,7 @@ import android.widget.*;
 				@Override
 				public void onClick(View v) {
 					dbProvider.Clean();
+					executor.SearchAction();
 					executor.Resume();				
 				}
 			};

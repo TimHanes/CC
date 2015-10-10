@@ -12,6 +12,7 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
     public final static String DATABASE_TABLE = "UriDublicatesOfContact";
  
     public static final String CONTACT_URI = "contactUri";
+    public static final String OPTIONS = "options";
     public static final String URI_DUBLICATES_BY_NAME = "uriDublicatesByName";
     public static final String URI_DUBLICATES_BY_PHONE = "uriDublicatesByPhone";
  
@@ -21,7 +22,7 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
     private static final String DATABASE_CREATE_SCRIPT = "create table "
             + DATABASE_TABLE + " (" + BaseColumns._ID
             + " integer primary key autoincrement, " + CONTACT_URI
-            + " text not null, " + URI_DUBLICATES_BY_NAME + " text, " + URI_DUBLICATES_BY_PHONE
+            + " text not null, " + OPTIONS + " integer not null, " + URI_DUBLICATES_BY_NAME + " text, " + URI_DUBLICATES_BY_PHONE
             + " text);";
     
     public DbHelper(Context context) {

@@ -6,11 +6,8 @@ import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.hendlers.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.DbProvider;
-
-import android.R;
 import android.net.Uri;
 import android.os.Message;
-import android.widget.Spinner;
 
 public class ExecutorThread extends BaseThread
 {
@@ -18,7 +15,7 @@ public class ExecutorThread extends BaseThread
 	MessageHandler messageHandler;
 	ContactsHandler contactsHandler;
 	ResultHandler resultHandler;
-	private int curentResultHandlerAction = 0;
+	private int curentHandlerAction = 0;
 
 	private DbProvider dbProvider;
 	private ActionType action;
@@ -44,21 +41,26 @@ public class ExecutorThread extends BaseThread
 	
 	@Override
 	public void run() {
-		while (true) {
-			super.run();
+		do {
+			if(curentHandlerAction != HandlerActionType.SearchesDublicates.ordinal())
+				super.run();
 			
 			if(dbProvider.getContactsUri().length == 0){
 				Options options = new Options();
-				if ((options.ByName) | (options.ByPhone))
+				if ((options.isByName()) | (options.isByPhone())){
 					StartContactHandler();
+					Message.obtain(messageHandler, MessageType.SetButtonsApp.ordinal()).sendToTarget();
+				}
+				
 				else 
 					Message.obtain(messageHandler, MessageType.ShowToast.ordinal(),
 						"Set options for choosing please!").sendToTarget();				
-				}
-			StartResultHandler();
+				}		
+				FirstResultAction();
+				StartResultHandler();
+				Message.obtain(messageHandler, MessageType.SetButtonsApp.ordinal()).sendToTarget();
 			this.Pause();
-			super.run();
-		}
+		} while (true);			
 	}	
 
 	private void StartContactHandler(){
@@ -73,12 +75,11 @@ public class ExecutorThread extends BaseThread
 		Dublicates dubl = null;
 		while(dbProvider.getContactsUri().length > 0){				
 			
-			ResultHandlerActionType _whichChoos = ResultHandlerActionType.values()[curentResultHandlerAction];
+			HandlerActionType _whichChoos = HandlerActionType.values()[curentHandlerAction];
 		
 			switch (_whichChoos) {
 			
-			case ShowList:
-				
+			case ShowList:				
 				resultHandler.ShowList();
 				this.Pause();
 				super.run();
@@ -102,15 +103,18 @@ public class ExecutorThread extends BaseThread
 			default:
 				break;				
 			}			
-		}		
+		}
+		Message.obtain(messageHandler, MessageType.Finally.ordinal()).sendToTarget();
+		Message.obtain(messageHandler, MessageType.ShowToast.ordinal(),
+				"End processing!").sendToTarget();
 	}
 
 	public void NextResultAction(){
-		curentResultHandlerAction++;
+		curentHandlerAction++;
 	}
 	
 	public void FirstResultAction(){
-		curentResultHandlerAction = 0;
+		curentHandlerAction = HandlerActionType.ShowList.ordinal();
 	}
 	
 	private Uri getUriFromDublicatesByPosition(Dublicates dubl, Integer clickPosition) {
@@ -156,6 +160,11 @@ public class ExecutorThread extends BaseThread
 
 	public void setmFinish(boolean mFinish) {
 		this.mFinish = mFinish;
+	}
+
+	public void SearchAction() {
+		curentHandlerAction = HandlerActionType.SearchesDublicates.ordinal();
+		
 	}
 
 	

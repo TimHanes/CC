@@ -1,6 +1,7 @@
 package com.luciuses.contactcleaner.treads;
 
 import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.basis.BaseThread;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
@@ -32,7 +33,7 @@ public class ShowFoundDublesThread extends BaseThread {
 
 	private void ShowList(DbProvider dbProvider){	
 		DublicatesContact dublicatesContact = contactsProvider.getDublicatesContact(dublicates);
-		
+		Functions func = new Functions();
 		int i = 0;
 		int countByName = 0;
 		int countByPhone = 0;
@@ -45,21 +46,17 @@ public class ShowFoundDublesThread extends BaseThread {
 		String[] showArray = new String[count + 1];
 		
 		for(; i < countByName; i++ ){
-			showArray[i] = ContactToString(dublicatesContact.getDublicatesByName()[i]);
+			showArray[i] = func.ContactToString(dublicatesContact.getDublicatesByName()[i]);
 		}
 		for(; i < count; i++ ){			
-			showArray[i] = ContactToString(dublicatesContact.getDublicatesByPhone()[i]);
+			showArray[i] = func.ContactToString(dublicatesContact.getDublicatesByPhone()[i]);
 		}
 		
-		showArray[count] = ContactToString(dublicatesContact.getContact());
+		showArray[count] = func.ContactToString(dublicatesContact.getContact());
 		
 		ShowList showList = new ShowList("Dublicates of contact:", showArray);		
 		Message.obtain (messageHandler, MessageType.ShowListView.ordinal(), showList).sendToTarget();			
-	}	
-	
-	private String ContactToString(Contact contact){
-		return contact.getId() + "\r\n" + contact.getName() + "\r\n" + contact.getPhones();		
-	}
+	}			
 }
 
 

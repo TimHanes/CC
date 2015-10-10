@@ -84,16 +84,9 @@ public class ResultHandler
 				uri = dubl.getUriDublicatesByName()[0];
 		}
 		
-		SearchDublicateThread searchDublicateThread = new SearchDublicateThread(uri, executor);
-		searchDublicateThread.start();
-		
-		try {
-			searchDublicateThread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		SearchDublicate searchDublicateThread = new SearchDublicate(uri, dubl.getOptions(), executor);
+		searchDublicateThread.Run();
+				
 		Dublicates dubls = searchDublicateThread.getDublicates();
 		if (dubls != null) {
 			dbProvider.Save(dubls);

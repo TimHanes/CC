@@ -7,7 +7,7 @@ import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.*;
 import com.luciuses.contactcleaner.treads.ExecutorThread;
-import com.luciuses.contactcleaner.treads.SearchDublicateThread;
+import com.luciuses.contactcleaner.treads.SearchDublicate;
 
 public class ContactsHandler {
 	private ExecutorThread executor;
@@ -27,31 +27,26 @@ public class ContactsHandler {
 		executor.setmFinish(false);
 		int contactCount = contactsProvider.getCount();
 		for (int position = 0; position < contactCount; position++) {
-			Contact contact = contactsProvider.getContactByPosition(position);							
-			SearchDublicateThread searchDublicateThread = new SearchDublicateThread(contact, executor);
-			searchDublicateThread.start();
+			Contact contact = contactsProvider.getContactByPosition(position);
+			if(contact == null)
+				return;			
+			SearchDublicate searchDublicate = new SearchDublicate(contact, executor);
+			searchDublicate.Run();
+				
+			if (executor.ismFinish())				
+				break;
+			ProgressInfo(contactCount, position, contact);
 			
-			try {
-				searchDublicateThread.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			Dublicates dubls = searchDublicateThread.getDublicates();
+			Dublicates dubls = searchDublicate.getDublicates();			
 			if (dubls != null) {								
 				count++;
 				dbProvider.Save(dubls);
-			}
-			if (executor.ismFinish())				
-				break;
-			ProgressInfo(contactCount, position, contact);					
+			}								
 		}
 	}
 
 	private void ProgressInfo(int contactCount, int position, Contact contact) {
 
-		Message.obtain(executor.getMessageHandler(), MessageType.SetTextToLogView.ordinal(),
-				"work with:" + contact.getId() + "-" + contact.getName() + "\r\n").sendToTarget();
 		Message.obtain(executor.getMessageHandler(), MessageType.ShowProgress.ordinal(), contactCount, position,
 				contact.getName() + "\r\n" + "Found dublicates:" + count).sendToTarget();
 	}
