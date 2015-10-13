@@ -16,6 +16,7 @@ public class MessageHandler extends Handler {
 	
 	private TextView _logView;
 	private ExecutorThread Executor;
+	private Parcelable state;
 
 	public MessageHandler(ExecutorThread executor) {
 		this.Executor = executor;
@@ -87,17 +88,30 @@ public class MessageHandler extends Handler {
 	
 	
 	private void ShowListView(Message msg) {
+		
 		OnItemClickListener listener = new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if(Executor.getCurentHandlerAction() == HandlerActionType.ShowList.ordinal())
+					state = App.Instance().getPopup().listView1.onSaveInstanceState();
 				App.Instance().getPopup().MsgBoxClose();
 				Executor.setClickPosition(position);	
 				Executor.NextResultAction();
 				Executor.Resume();
 			}
 		};
-		
+		View.OnClickListener cancel = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {	
+				App.Instance().getPopup().MsgBoxClose();
+				int a = Executor.getCurentHandlerAction();
+				if(a == HandlerActionType.ShowDublicates.ordinal()){
+					Executor.FirstResultAction();
+					Executor.Resume();
+				}
+			}
+		};
 		ShowList showList = (ShowList) msg.obj;		
-		App.Instance().getPopup().MsgBoxListView("Choose contact", showList, listener);
+		App.Instance().getPopup().MsgBoxListView("Choose contact", showList, listener, cancel, state);
 
 	}
 

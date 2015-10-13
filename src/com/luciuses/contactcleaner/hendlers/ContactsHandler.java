@@ -29,7 +29,7 @@ public class ContactsHandler {
 		for (int position = 0; position < contactCount; position++) {
 			Contact contact = contactsProvider.getContactByPosition(position);
 			if(contact == null)
-				return;			
+				return;						
 			SearchDublicate searchDublicate = new SearchDublicate(contact, executor);
 			searchDublicate.Run();
 				

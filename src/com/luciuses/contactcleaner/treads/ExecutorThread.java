@@ -17,6 +17,14 @@ public class ExecutorThread extends BaseThread
 	ResultHandler resultHandler;
 	private int curentHandlerAction = 0;
 
+	public int getCurentHandlerAction() {
+		return curentHandlerAction;
+	}
+
+	public void setCurentHandlerAction(int curentHandlerAction) {
+		this.curentHandlerAction = curentHandlerAction;
+	}
+
 	private DbProvider dbProvider;
 	private ActionType action;
 	private boolean mFinish;
@@ -123,7 +131,7 @@ public class ExecutorThread extends BaseThread
 		if((dubl.getUriDublicatesByName()!= null)) 
 			countByName = dubl.getUriDublicatesByName().length;		
 		if((dubl.getUriDublicatesByPhone()!= null)) 
-			countByName = dubl.getUriDublicatesByPhone().length;
+			countByPhone = dubl.getUriDublicatesByPhone().length;
 		if (clickPosition < countByName)
 			return dubl.getUriDublicatesByName()[clickPosition];	
 		if (clickPosition < countByName + countByPhone)

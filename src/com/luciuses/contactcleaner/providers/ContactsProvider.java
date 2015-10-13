@@ -214,8 +214,7 @@ public class ContactsProvider {
 		cur.moveToFirst();
 		for(int i = 0; i < cur.getCount(); i++,cur.moveToNext()){			
 				Uri uri = getUriByCursor(cur);
-				contactsUri[i] = uri;
-				i++;			
+				contactsUri[i] = uri;							
 		}
 		return contactsUri;
 	}

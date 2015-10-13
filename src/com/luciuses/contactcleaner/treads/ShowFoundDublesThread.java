@@ -49,7 +49,7 @@ public class ShowFoundDublesThread extends BaseThread {
 			showArray[i] = func.ContactToString(dublicatesContact.getDublicatesByName()[i]);
 		}
 		for(; i < count; i++ ){			
-			showArray[i] = func.ContactToString(dublicatesContact.getDublicatesByPhone()[i]);
+			showArray[i] = func.ContactToString(dublicatesContact.getDublicatesByPhone()[i-countByName]);
 		}
 		
 		showArray[count] = func.ContactToString(dublicatesContact.getContact());

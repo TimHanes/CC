@@ -6,6 +6,7 @@ import com.luciuses.contactcleaner.R;
 import com.luciuses.contactcleaner.models.ShowList;
 
 import android.app.*;
+import android.os.Parcelable;
 import android.util.*;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -26,7 +27,9 @@ public class Popup
 	public ProgressBar pb;
 	public CheckBox chbsave;
 	public TextView chvsave;
-	private ListView listView1;
+	public ListView listView1;
+
+	
 	public Popup (Activity iactivity)
 	{
 		activity=iactivity;
@@ -283,7 +286,7 @@ public class Popup
 	}
 	
 	
-	public void MsgBoxListView(String title, ShowList showList, OnItemClickListener listener)
+	public void MsgBoxListView(String title, ShowList showList, OnItemClickListener listener, OnClickListener cancel, Parcelable state)
 	{
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(App.Instance().getContext(),android.R.layout.simple_list_item_1, showList.getBody());
 		invisible();
@@ -296,8 +299,10 @@ public class Popup
 		listView1.setOnItemClickListener(listener);
 		txt1.setVisibility(View.VISIBLE);
 		txt1.setText(showList.getHeader());
-		btn1.setOnClickListener(new View.OnClickListener(){public void onClick(View v){dialog.cancel();}});
-			
+		btn1.setOnClickListener(cancel);
+		if(state!= null)
+			listView1.onRestoreInstanceState(state);
+		
 		try
 		{
 			dialog.show();
