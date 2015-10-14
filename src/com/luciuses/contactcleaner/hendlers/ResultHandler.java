@@ -1,11 +1,12 @@
 package com.luciuses.contactcleaner.hendlers;
 
 import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.actions.*;
 import com.luciuses.contactcleaner.basis.*;
 import com.luciuses.contactcleaner.components.ActionType;
 import com.luciuses.contactcleaner.models.Dublicates;
 import com.luciuses.contactcleaner.providers.DbProvider;
-import com.luciuses.contactcleaner.treads.*;
+import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.net.Uri;
 
@@ -23,19 +24,19 @@ public class ResultHandler
 	
 	public void ShowList()
 	{		
-		resultHandlerThread = new ShowAllThread(executor);	
-		resultHandlerThread.start();
+		ShowAll showAll = new ShowAll(executor);	
+		showAll.Run();
 	}
 	
 	public void ShowDublicates(Dublicates dubl)
 	{				
-		resultHandlerThread = new ShowFoundDublesThread(dubl, executor.getMessageHandler());
-		resultHandlerThread.start();	
+		ShowFoundDubles showFoundDubles = new ShowFoundDubles(dubl, executor.getMessageHandler());
+		showFoundDubles.Run();
 	}
 	
 	public void ShowChooseAction(Uri uri){		
-		resultHandlerThread = new RequestActionThread(uri, executor.getMessageHandler());
-		resultHandlerThread.start();
+		RequestAction requestAction = new RequestAction(uri, executor.getMessageHandler());
+		requestAction.Run();
 	}
 	
 	public BaseThread getTread(){
@@ -53,8 +54,8 @@ public class ResultHandler
 			break;
 			
 		case Delete:			
-			resultHandlerThread = new DeletedThread(dubl, uri, executor.getMessageHandler());
-			resultHandlerThread.start();		
+			Deleted deleted = new Deleted(dubl, uri, executor.getMessageHandler());
+			deleted.Run();		
 			UpdateContact(dubl, uri);
 			break;
 			
@@ -74,22 +75,28 @@ public class ResultHandler
 	}	
 	
 	private void UpdateContact(Dublicates dubl, Uri deletedUri) {
-		
 		Uri uri = null;
 		if(dubl.getContactUri() != deletedUri) uri = dubl.getContactUri();
-		else {
-			if(dubl.getUriDublicatesByPhone() != null)
-				uri = dubl.getUriDublicatesByPhone()[0];
+		else {			
 			if(dubl.getUriDublicatesByName() != null)
 				uri = dubl.getUriDublicatesByName()[0];
-		}
-		
-		SearchDublicate searchDublicateThread = new SearchDublicate(uri, dubl.getOptions(), executor);
-		searchDublicateThread.Run();
-				
+			searchDublicates(dubl.getOptions(), uri);
+			if(dubl.getUriDublicatesByPhone() != null)
+				uri = dubl.getUriDublicatesByPhone()[0];
+			searchDublicates(dubl.getOptions(), uri);
+		}				
+	}
+	
+	private void searchDublicates(int options, Uri uri){
+		if(dbProvider.isContainsContact(uri))
+			return;
+		SearchDublicate searchDublicateThread = new SearchDublicate(uri, options,executor);
+		searchDublicateThread.Run();				
 		Dublicates dubls = searchDublicateThread.getDublicates();
 		if (dubls != null) {
 			dbProvider.Save(dubls);
 		}			
 	}
+
+	
 }

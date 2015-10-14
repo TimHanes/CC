@@ -135,4 +135,15 @@ public class DbProvider {
 				null, null);
 		return cursor;
 	}
+
+	public boolean isContainsContact(Uri uri) {		
+			if(uri == null) return true;		
+			Uri[] uris = getContactsUri();
+			if(uris != null)
+			for(int i = 0; i < uris.length; i++){
+				if(uris[i] == uri) 
+					return true;
+			}			
+		return false;
+	}
 }

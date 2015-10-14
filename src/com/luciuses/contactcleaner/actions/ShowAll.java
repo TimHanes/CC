@@ -1,33 +1,31 @@
-package com.luciuses.contactcleaner.treads;
+package com.luciuses.contactcleaner.actions;
 
 import java.util.ArrayList;
 
 import com.luciuses.contactcleaner.*;
-import com.luciuses.contactcleaner.basis.*;
 import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.*;
+import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.net.Uri;
 import android.os.Message;
 
-public class ShowAllThread extends BaseThread
+public class ShowAll
 	{
 	
 	private DbProvider dbProvider;
 	private ContactsProvider contactsProvider;
 	private ExecutorThread executor;
 	
-	public ShowAllThread(ExecutorThread executor){
+	public ShowAll(ExecutorThread executor){
 		this.executor = executor;		
 		contactsProvider = new ContactsProvider(executor.getMessageHandler());		
-		dbProvider = App.Instance().getDbProvider();	
-		super.setName("ShowAllThread");
+		dbProvider = App.Instance().getDbProvider();			
 	}
 		
 	
-	@Override
-	public void run()
+	public void Run()
 	{		
 		ShowList(dbProvider);		
 	}

@@ -1,4 +1,4 @@
-package com.luciuses.contactcleaner.treads;
+package com.luciuses.contactcleaner.actions;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import com.luciuses.contactcleaner.models.Contact;
 import com.luciuses.contactcleaner.models.Dublicates;
 import com.luciuses.contactcleaner.models.Options;
 import com.luciuses.contactcleaner.providers.ContactsProvider;
+import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.net.Uri;
 import android.os.Message;
@@ -59,7 +60,7 @@ public class SearchDublicate {
 		if (options.isByPhone()) {
 			conUriByPhone = CheckByPhone(contact);
 		}		
-		if ((CheckByPhone(contact) != null) || (CheckByName(contact) != null)) {
+		if ((conUriByPhone != null) || (conUriByName != null)) {
 			return  new Dublicates(contactsProvider.getUriByContactId(contact.getId()), options.getOptions(), conUriByName, conUriByPhone);		
 		}		
 		return null;		

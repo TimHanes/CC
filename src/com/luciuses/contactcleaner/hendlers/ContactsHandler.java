@@ -3,11 +3,11 @@ package com.luciuses.contactcleaner.hendlers;
 import android.os.*;
 
 import com.luciuses.contactcleaner.App;
+import com.luciuses.contactcleaner.actions.SearchDublicate;
 import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.models.*;
 import com.luciuses.contactcleaner.providers.*;
 import com.luciuses.contactcleaner.treads.ExecutorThread;
-import com.luciuses.contactcleaner.treads.SearchDublicate;
 
 public class ContactsHandler {
 	private ExecutorThread executor;

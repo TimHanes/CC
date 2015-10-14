@@ -1,8 +1,7 @@
-package com.luciuses.contactcleaner.treads;
+package com.luciuses.contactcleaner.actions;
 
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.Functions.Functions;
-import com.luciuses.contactcleaner.basis.BaseThread;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
 import com.luciuses.contactcleaner.models.*;
@@ -10,23 +9,21 @@ import com.luciuses.contactcleaner.providers.*;
 
 import android.os.Message;
 
-public class ShowFoundDublesThread extends BaseThread {
+public class ShowFoundDubles {
 
 	private DbProvider dbProvider;
 	private ContactsProvider contactsProvider;
 	private MessageHandler messageHandler; 
 	private Dublicates dublicates;
 	
-	public ShowFoundDublesThread(Dublicates dublicates, MessageHandler messageHandler) {
+	public ShowFoundDubles(Dublicates dublicates, MessageHandler messageHandler) {
 		this.dublicates = dublicates;
 		contactsProvider = new ContactsProvider(messageHandler);
 		this.messageHandler = messageHandler;
-		dbProvider = App.Instance().getDbProvider();	
-		super.setName("ShowFoundDublesThread");
+		dbProvider = App.Instance().getDbProvider();			
 	}
 	
-	@Override
-	public void run()
+	public void Run()
 	{		
 		ShowList(dbProvider);		
 	}
