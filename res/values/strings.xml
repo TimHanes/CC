@@ -2,7 +2,7 @@
 <resources>
 
     <string name="f_prompt">Select function</string>
-    <string name="app_name">ContactCleaner</string>
+    <string name="app_name">Contacts Cleaner</string>
 	<string-array name = "f_array" >
 		<item>and</item>
 		<item>or</item>
