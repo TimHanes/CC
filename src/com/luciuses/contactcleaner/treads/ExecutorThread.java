@@ -135,7 +135,7 @@ public class ExecutorThread extends BaseThread
 		if (clickPosition < countByName)
 			return dubl.getUriDublicatesByName()[clickPosition];	
 		if (clickPosition < countByName + countByPhone)
-			return dubl.getUriDublicatesByPhone()[clickPosition];
+			return dubl.getUriDublicatesByPhone()[clickPosition - countByName];
 		return dubl.getContactUri();				
 	}
 
