@@ -1,5 +1,7 @@
 package com.luciuses.contactcleaner.providers;
 
+import java.util.ArrayList;
+
 import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.basis.DbHelper;
 import com.luciuses.contactcleaner.models.Dublicates;
@@ -137,12 +139,15 @@ public class DbProvider {
 	}
 
 	public boolean isContainsContact(Uri uri) {		
-			if(uri == null) return true;		
-			Uri[] uris = getContactsUri();
-			if(uris != null)
+			if(uri == null) 
+				return true;		
+			Uri[] uris = getContactsUri();					
+			if(uris != null)							
 			for(int i = 0; i < uris.length; i++){
-				if(uris[i] == uri) 
+				int uriSInt1 = uris[i].compareTo(uri);				
+				if(uriSInt1 == 0) {
 					return true;
+				}												
 			}			
 		return false;
 	}

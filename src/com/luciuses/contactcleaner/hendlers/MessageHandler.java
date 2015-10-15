@@ -61,6 +61,16 @@ public class MessageHandler extends Handler {
 	}
 
 	private void ShowPopupForChooseAction(Message msg) {		
+				
+		OnClickListener _onButtonIgnore = new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				App.Instance().getPopup().MsgBoxClose();
+				Executor.setAction(ActionType.Ignore);
+				Executor.NextResultAction();
+				Executor.Resume();				
+			}
+		};
 		
 		OnClickListener _onButtonDelete = new OnClickListener() {
 			@Override
@@ -72,15 +82,6 @@ public class MessageHandler extends Handler {
 			}
 		};
 		
-		OnClickListener _onButtonIgnore = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				App.Instance().getPopup().MsgBoxClose();
-				Executor.setAction(ActionType.Ignore);
-				Executor.NextResultAction();
-				Executor.Resume();				
-			}
-		};
 		App.Instance().getPopup().MsgBoxButtons("What do with:", msg.obj.toString() + " ?", "Delete", "Cancel",
 				_onButtonDelete, _onButtonIgnore);
 	}

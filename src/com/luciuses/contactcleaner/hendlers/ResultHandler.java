@@ -76,7 +76,10 @@ public class ResultHandler
 	
 	private void UpdateContact(Dublicates dubl, Uri deletedUri) {
 		Uri uri = null;
-		if(dubl.getContactUri() != deletedUri) uri = dubl.getContactUri();
+		if(dubl.getContactUri() != deletedUri){
+			uri = dubl.getContactUri();
+			searchDublicates(dubl.getOptions(), uri);
+			}
 		else {			
 			if(dubl.getUriDublicatesByName() != null)
 				uri = dubl.getUriDublicatesByName()[0];

@@ -51,8 +51,8 @@ public class SearchDublicate {
 	}
 	
 	private Dublicates SearchDubl(Contact contact) {
-		Uri[] conUriByName = null;
-		Uri[] conUriByPhone = null;
+		ArrayList<Uri> conUriByName = null ;
+		ArrayList<Uri> conUriByPhone = null;
 		if (options.isByName()) {
 			conUriByName = CheckByName(contact); 
 		}
@@ -61,35 +61,36 @@ public class SearchDublicate {
 			conUriByPhone = CheckByPhone(contact);
 		}		
 		if ((conUriByPhone != null) || (conUriByName != null)) {
-			return  new Dublicates(contactsProvider.getUriByContactId(contact.getId()), options.getOptions(), conUriByName, conUriByPhone);		
+			Uri[] conUriByNameArr = ListToArray(conUriByName);
+			Uri[] conUriByPhoneArr = ListToArray(conUriByName);
+			return  new Dublicates(contactsProvider.getUriByContactId(contact.getId()), options.getOptions(), conUriByNameArr, conUriByPhoneArr);		
 		}		
 		return null;		
 	}
 
-	private Uri[] CheckByPhone(Contact contact) {
+	private ArrayList<Uri> CheckByPhone(Contact contact) {
 		if(contact.getPhones() == null)
 			return null;
-		ArrayList<Uri> conUriByPhone = new ArrayList<Uri>();
-		Uri[] chConUriByPhone = null;		
+		ArrayList<Uri> conUris = new ArrayList<Uri>();		
 		String[] phones = contact.getPhones().split("\r\n");
 		for (int p = 0; p < phones.length; p++) {
 			Uri[] foundUris = contactsProvider.getContactUrisByPhone(phones[p]);			
-				CheckContacts(contact, foundUris, conUriByPhone);
+				CheckContacts(contact, foundUris, conUris);
 		}
-		chConUriByPhone = ListToArray(conUriByPhone);
-		if (chConUriByPhone == null)
+		if (conUris.isEmpty()) {
 			return null;
-		return chConUriByPhone;
+		}		
+		return conUris;
 	}
 
-	private Uri[] CheckByName(Contact contact) {
+	private ArrayList<Uri> CheckByName(Contact contact) {
 		Uri[] foundUri = contactsProvider.getContactsUriByName(contact.getName(), false);
-		ArrayList<Uri> conUriByName = new ArrayList<Uri>();
-		CheckContacts(contact, foundUri, conUriByName);
-		Uri[] chConUriByName = ListToArray(conUriByName);
-		if (chConUriByName == null)
+		ArrayList<Uri> conUris = new ArrayList<Uri>();
+		CheckContacts(contact, foundUri, conUris);
+		if (conUris.isEmpty()) {
 			return null;
-		return chConUriByName;
+		}				
+		return conUris;
 	}
 	
 	private void CheckContacts(Contact contact, Uri[] uris, ArrayList<Uri> conUri) {		
@@ -97,17 +98,16 @@ public class SearchDublicate {
 			for (int i = 0; i <= uris.length - 1; i++) {
 				if (uris[i] != null){
 					Boolean resultCompare = CompaireContact(contact, uris[i]);	
-				if (resultCompare == null) 
-					return;					
+				if (resultCompare == null){
+					conUri.clear();
+					return;
+				} 										
 				if (resultCompare)
 					if(!conUri.contains(uris[i]))
 					conUri.add(uris[i]);
 				}
 			}
-		}
-		if (conUri.isEmpty()) {
-			return;
-		}							
+		}									
 	}
 
 	private Boolean CompaireContact(Contact contact, Uri uri) {
