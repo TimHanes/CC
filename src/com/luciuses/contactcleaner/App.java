@@ -1,8 +1,7 @@
 package com.luciuses.contactcleaner;
 
-import com.luciuses.contactcleaner.providers.DbProvider;
+import com.luciuses.contactcleaner.components.StepType;
 import com.luciuses.contactcleaner.screens.Popup;
-import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.app.*;
 import android.content.*;
@@ -15,7 +14,7 @@ import android.widget.*;
 		private static App instance = new App ();			
 		private Popup popup ;
 		private Context context;			
-		private DbProvider dbProvider;
+		private ProviderDuplicatesDb dbProvider;
 		private Activity activity;
 	
 		private App() 
@@ -34,7 +33,7 @@ import android.widget.*;
 			return context;
 		}
 
-		public DbProvider getDbProvider() {
+		public ProviderDuplicatesDb getDbProvider() {
 			return dbProvider;
 		}
 
@@ -47,22 +46,22 @@ import android.widget.*;
 			this.activity = activity;			
 			this.context = context;
 			popup = new Popup(activity);
-			dbProvider = new DbProvider(context);						
+			dbProvider = new ProviderDuplicatesDb(context);						
 			Button buttonReScan = (Button)activity.findViewById(R.id.btnStart);			
 			Button buttonContinue = (Button)activity.findViewById(R.id.btnContinue);
-			if(dbProvider.getContactsUri().length > 0){
+			if(dbProvider.getCountAllSourses() > 0){
 				buttonReScan.setText("RESCAN");
 				buttonContinue.setVisibility(View.VISIBLE);
 			}
-			final ExecutorThread executor = new ExecutorThread();
-			executor.Pause();
-			executor.FirstResultAction();
+			final Executor executor = new Executor(dbProvider);
+			executor.setStep(StepType.Start);
+			executor.Pause();			
 			executor.start();
 			
 			OnClickListener buttonContinueListener = new OnClickListener(){				
 				@Override
 				public void onClick(View v) {
-					executor.FirstResultAction();
+					executor.setStep(StepType.ShowList);
 					executor.Resume();				
 				}
 			};
@@ -70,7 +69,12 @@ import android.widget.*;
 				@Override
 				public void onClick(View v) {
 					dbProvider.Clean();
-					executor.SearchAction();
+					executor.CleanList();
+					Button buttonReScan = (Button)getActivity().findViewById(R.id.btnStart);			
+					Button buttonContinue = (Button)getActivity().findViewById(R.id.btnContinue);
+					buttonReScan.setText("SCAN");
+					buttonContinue.setVisibility(View.GONE);
+					executor.setStep(StepType.SearchesDublicates );
 					executor.Resume();				
 				}
 			};

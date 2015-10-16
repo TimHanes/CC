@@ -1,10 +1,8 @@
 package com.luciuses.contactcleaner.hendlers;
 
-import com.luciuses.contactcleaner.App;
-import com.luciuses.contactcleaner.R;
+import com.luciuses.contactcleaner.*;
 import com.luciuses.contactcleaner.components.*;
 import com.luciuses.contactcleaner.models.ShowList;
-import com.luciuses.contactcleaner.treads.ExecutorThread;
 
 import android.os.*;
 import android.view.*;
@@ -15,10 +13,10 @@ import android.widget.AdapterView.*;
 public class MessageHandler extends Handler {
 	
 	private TextView _logView;
-	private ExecutorThread Executor;
+	private Executor Executor;
 	private Parcelable state;
 
-	public MessageHandler(ExecutorThread executor) {
+	public MessageHandler(Executor executor) {
 		this.Executor = executor;
 		TextView logView = (TextView) App.Instance().getActivity().findViewById(R.id.tv);
 		_logView = logView;
@@ -67,7 +65,7 @@ public class MessageHandler extends Handler {
 			public void onClick(View v) {
 				App.Instance().getPopup().MsgBoxClose();
 				Executor.setAction(ActionType.Ignore);
-				Executor.NextResultAction();
+				Executor.setStep(StepType.Executes);
 				Executor.Resume();				
 			}
 		};
@@ -77,7 +75,7 @@ public class MessageHandler extends Handler {
 			public void onClick(View v) {									
 				App.Instance().getPopup().MsgBoxClose();				
 				Executor.setAction(ActionType.Delete);
-				Executor.NextResultAction();
+				Executor.setStep(StepType.Executes);
 				Executor.Resume();
 			}
 		};
@@ -92,21 +90,20 @@ public class MessageHandler extends Handler {
 		
 		OnItemClickListener listener = new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(Executor.getCurentHandlerAction() == HandlerActionType.ShowList.ordinal())
+				if(Executor.getStep() == StepType.ShowList)
 					state = App.Instance().getPopup().listView1.onSaveInstanceState();
 				App.Instance().getPopup().MsgBoxClose();
-				Executor.setClickPosition(position);	
-				Executor.NextResultAction();
-				Executor.Resume();
+				Executor.setClickPosition(position);		
+				Executor.setStep(StepType.values()[Executor.getStep().ordinal()+1]);
+				Executor.Resume();				
 			}
 		};
 		View.OnClickListener cancel = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {	
 				App.Instance().getPopup().MsgBoxClose();
-				int a = Executor.getCurentHandlerAction();
-				if(a == HandlerActionType.ShowDublicates.ordinal()){
-					Executor.FirstResultAction();
+				if(Executor.getStep() == StepType.ShowDublicates){
+					Executor.setStep(StepType.ShowList);
 					Executor.Resume();
 				}
 			}
@@ -120,7 +117,7 @@ public class MessageHandler extends Handler {
 		View.OnClickListener cancel = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {					
-				Executor.setmFinish(true);
+				Executor.setFinish(true);
 				App.Instance().getPopup().MsgBoxClose();
 			}
 		};
@@ -130,13 +127,13 @@ public class MessageHandler extends Handler {
 	private void SetButtonsApp(Message msg) {
 		Button buttonReScan = (Button)App.Instance().getActivity().findViewById(R.id.btnStart);			
 		Button buttonContinue = (Button)App.Instance().getActivity().findViewById(R.id.btnContinue);
-		if(App.Instance().getDbProvider().getContactsUri().length > 0){
+		if(App.Instance().getDbProvider().getSourses().length > 0){
 			buttonReScan.setText("RESCAN");
 			buttonContinue.setVisibility(View.VISIBLE);
 		}
 		else{
 			buttonReScan.setText("SCAN");
-			buttonContinue.setVisibility(View.GONE);
+			buttonContinue.setVisibility(View.GONE);			
 		}
 	}
 

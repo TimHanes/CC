@@ -1,5 +1,6 @@
 package com.luciuses.contactcleaner.actions;
 
+import com.luciuses.contactcleaner.ProviderContactsDb;
 import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.hendlers.MessageHandler;
@@ -11,20 +12,19 @@ import android.os.Message;
 
 public class RequestAction {
 	
-	private ContactsProvider contactsProvider;
-	private Uri uri;	
+	private ProviderContactsDb contactsProvider;
+	private String id;	
 	private MessageHandler messageHandler;
 	
-	public RequestAction(Uri uri, MessageHandler messageHandler){
-		
+	public RequestAction(MessageHandler messageHandler){		
 		this.messageHandler = messageHandler;
-		contactsProvider = new ContactsProvider(messageHandler);
-		this.uri = uri;	
+		contactsProvider = new ProviderContactsDb(messageHandler);
+		this.id = id;	
 	}		
 	
-	public void Run(){
+	public void Run(String id){
 		
-		Contact contact = contactsProvider.getContactByUri(uri);	
+		Contact contact = contactsProvider.getContactById(id);	
 		Message.obtain(messageHandler, MessageType.ShowPopupForChooseAction.ordinal(),
 					"Contact:" + new Functions().ContactToString(contact)).sendToTarget();//
 	}

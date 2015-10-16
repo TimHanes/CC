@@ -22,13 +22,6 @@ import android.widget.*;
 			setAutoDelNull(autoDelNull.isChecked());
 		}	
 		
-		public Options(int options)
-		{
-			if(options == 1 | options == 11| options == 101 | options == 111 ) ByName = true;
-			if(options == 10 | options == 11| options == 110 | options == 111 ) ByPhone = true;
-			if(options == 100 | options == 101| options == 110 | options == 111 ) AutoDelNull = true;
-		}
-		
 		public boolean isByName() {
 			return ByName;
 		}
@@ -48,13 +41,9 @@ import android.widget.*;
 			AutoDelNull = autoDelNull;
 		}
 		
-		public int getOptions(){
-			
-			int result = 0;
-			if(ByName) result++;
-			if(ByPhone) result += 10;
-			if(AutoDelNull) result += 100;
-			return result;
-		}				
+		public boolean isChoosed(){
+			return ByName|ByPhone;
+		}
+		
 	}
 

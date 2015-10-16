@@ -2,22 +2,22 @@ package com.luciuses.contactcleaner.models;
 
 	public class Contact
 	{
-		private Integer Id ;
+		private String Id ;
 		private String Name ;
-		private String Phone ;
+		private String[] Phone ;
 
-		public Contact(Integer id, String name, String phone) {
+		public Contact(String id, String name, String[] phone) {
 		
 		Id = id;
 		Name = name;
 		Phone = phone;			
 		}	
 		
-		public Integer getId() {
+		public String getId() {
 	        return Id;
 	    }
 	 
-	    public void setId(Integer id) {
+	    public void setId(String id) {
 	        Id = id;
 	    }
 	 
@@ -29,10 +29,10 @@ package com.luciuses.contactcleaner.models;
 	        Name = name;
 	    }
 	 
-	    public String getPhones() {
+	    public String[] getPhones() {
 	        return Phone;
 	    }
-	    public void setPhone(String phone) {
+	    public void setPhone(String[] phone) {
 	        Phone = phone;
 	    }		
 	}

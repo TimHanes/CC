@@ -9,21 +9,20 @@ import android.util.Log;
 public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
  
  
-    public final static String DATABASE_TABLE = "UriDublicatesOfContact";
+    public final static String DATABASE_TABLE = "Dublicates";
  
-    public static final String CONTACT_URI = "contactUri";
-    public static final String OPTIONS = "options";
-    public static final String URI_DUBLICATES_BY_NAME = "uriDublicatesByName";
-    public static final String URI_DUBLICATES_BY_PHONE = "uriDublicatesByPhone";
+    public static final String SOURSE_TYPE = "sourseType";
+    public static final String SOURSE = "sourse";
+    public static final String ID_DUBLICATES = "iDDublicates";
  
-    private static final String DATABASE_NAME = "BdUriDublicatesOfContacts";
+    private static final String DATABASE_NAME = "DbDublicates";
     private static final int DATABASE_VERSION = 1;
  
     private static final String DATABASE_CREATE_SCRIPT = "create table "
             + DATABASE_TABLE + " (" + BaseColumns._ID
-            + " integer primary key autoincrement, " + CONTACT_URI
-            + " text not null, " + OPTIONS + " integer not null, " + URI_DUBLICATES_BY_NAME + " text, " + URI_DUBLICATES_BY_PHONE
-            + " text);";
+            + " integer primary key autoincrement, " + SOURSE_TYPE
+            + " integer not null, " + SOURSE
+            + " text not null, " + ID_DUBLICATES + " text not null);";
     
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,12 +41,9 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Запишем в журнал
-        Log.w("SQLite", "Обновляемся с версии " + oldVersion + " на версию " + newVersion);
-
-        // Удаляем старую таблицу и создаём новую
-        db.execSQL("DROP TABLE IF IT EXISTS " + DATABASE_TABLE);
-        // Создаём новую таблицу
+       
+        Log.w("SQLite", "Обновляемся с версии " + oldVersion + " на версию " + newVersion);  
+        db.execSQL("DROP TABLE IF IT EXISTS " + DATABASE_TABLE);       
         onCreate(db);
     }
 }
