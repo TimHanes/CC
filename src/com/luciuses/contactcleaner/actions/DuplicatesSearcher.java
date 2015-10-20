@@ -6,6 +6,8 @@ import com.luciuses.contactcleaner.*;
 import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.models.Contact;
 import com.luciuses.contactcleaner.models.Options;
+import android.annotation.SuppressLint;
+import android.telephony.PhoneNumberUtils;
 
 public class DuplicatesSearcher {
 
@@ -35,7 +37,9 @@ public class DuplicatesSearcher {
 		}				
 	}
 
+	@SuppressLint("DefaultLocale")
 	private void CheckByName(String name) {
+		name = name.toUpperCase();
 		if(!list.contains(name)){			
 		String[] duplicatesId = contactsProvider.getContactsIdByName(name);
 		if(duplicatesId == null)
@@ -54,9 +58,7 @@ public class DuplicatesSearcher {
 	}
 
 	private void CheckByPhone(String phone) {
-		
-		;
-		
+
 		if(!isContainsList(phone)){			
 		String[] duplicatesId = contactsProvider.getContactsIdByPhone(phone);
 		if(duplicatesId == null) 
@@ -69,21 +71,13 @@ public class DuplicatesSearcher {
 
 	private boolean isContainsList(String phone) {
 		if(phone == null) return true;
-		phone = SimplerPhone(phone, 5);
+		
 		for( int i =0; i < list.size(); i++){
-			String listPhone = list.get(i);
-			listPhone = SimplerPhone(listPhone, 5);
-			if(listPhone.equals(phone)) 
-				return true;
+			String listPhone = list.get(i);		
+			if(PhoneNumberUtils.compare(listPhone, phone)) 
+				return true;			
 		}				
 		return false;
-	}
-
-	private String SimplerPhone(String phone, int numer) {
-		
-		phone = phone.replaceAll("\\D+","");
-    	phone = phone.substring(phone.length()-(phone.length() < numer ? phone.length(): numer ));
-		return phone;
 	}
 
 	public void Search(SourseType sourseType, String sourse) {

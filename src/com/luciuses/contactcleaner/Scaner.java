@@ -5,24 +5,24 @@ import com.luciuses.contactcleaner.components.MessageType;
 import com.luciuses.contactcleaner.components.StepType;
 import com.luciuses.contactcleaner.models.Contact;
 
+import android.net.Uri;
 import android.os.Message;
 
 public class Scaner {
 
-	private ProviderContactsDb contactsProvider;
 	private Executor executor;
 	private DuplicatesSearcher duplicatesSearcher;
 	
 	public Scaner(Executor executor) {
-		this.executor = executor;
-		this.contactsProvider = new ProviderContactsDb(executor.getMessageHandler());		
+		this.executor = executor;				
 	}
 
-	public void Scan() {
-		executor.setFinish(false);
-		int contactCount = contactsProvider.getCountAllContacts();
-		duplicatesSearcher = new DuplicatesSearcher(executor);
+	public void Scan(CursorModel where) {
 		
+		executor.getContactsProvider().setWhere(where);		
+		executor.setFinish(false);
+		int contactCount = executor.getContactsProvider().getCountAllContacts();
+		duplicatesSearcher = new DuplicatesSearcher(executor);		
 		for (int position = 0; position < contactCount; position++) {
 			Contact contact = executor.getContactsProvider().getContactByPosition(position);
 			if(contact == null)
@@ -34,8 +34,7 @@ public class Scaner {
 		}	
 		Message.obtain(executor.getMessageHandler(), MessageType.SetButtonsApp.ordinal()).sendToTarget();
 		if(executor.getList().isEmpty())
-			executor.setStep(StepType.Finish);
-		executor.setStep(StepType.ShowList);
+			executor.setStep(StepType.Finish);		
 	}
 	
 	private void ProgressInfo(int contactCount, int position, Contact contact) {

@@ -2,6 +2,8 @@ package com.luciuses.contactcleaner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.luciuses.contactcleaner.App;
 import com.luciuses.contactcleaner.Duplicates;
@@ -14,6 +16,8 @@ import com.luciuses.contactcleaner.hendlers.*;
 import com.luciuses.contactcleaner.models.*;
 import android.net.Uri;
 import android.os.Message;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -34,12 +38,22 @@ public class Executor extends BaseThread
 	public Executor(ProviderDuplicatesDb dbProvider) {		
 		this.dbProvider = dbProvider;				
 		list = new ArrayList<String>(Arrays.asList(dbProvider.getSourses()));
-		messageHandler = new MessageHandler(this);
-		shower = new Shower(this);
+		Sorted(list);
+		messageHandler = new MessageHandler(this);	
 		this.contactsProvider = new ProviderContactsDb(messageHandler);
+		shower = new Shower(this);
 		scaner = new Scaner(this);
 		super.setName("Executor");
 	}
+
+	private void Sorted(ArrayList<String> list) {		
+		Collections.sort(list, new Comparator<String>() {
+		        public int compare(String o1, String o2) {
+		                return o1.compareTo(o2);
+		        }
+		});				
+	}
+
 	public ArrayList<String> getList() {
 		return list;
 	}
@@ -79,7 +93,7 @@ public class Executor extends BaseThread
 	}
 	
 	@Override
-	public void run() {	
+	public void run() {			
 		
 		do{
 			switch (step) {
@@ -88,8 +102,10 @@ public class Executor extends BaseThread
 				super.run();
 				break;	
 			case SearchesDublicates:
-				if(new Options().isChoosed()){
-					scaner.Scan();					
+				Where wh = new Where();
+				if(new Options().isChoosed() && wh.isChoosed()){
+					scaner.Scan(wh.getWhere());					
+					setStep(StepType.ShowList);
 					break;
 				}
 				Message.obtain(messageHandler, MessageType.ShowToast.ordinal(),	"Please! Choose options.").sendToTarget();
@@ -99,9 +115,11 @@ public class Executor extends BaseThread
 				if(list.isEmpty()){					
 					setStep(StepType.Finish);
 					break;
-					}
-				String[] listArray = new String[list.size()];
-				shower.ShowList(list.toArray(listArray));
+					}		
+				Sorted(list);
+				String[] listArray = new String[list.size()];				
+				list.toArray(listArray);
+				shower.ShowList(listArray);
 				this.Pause();
 				super.run();
 				break;
@@ -179,5 +197,7 @@ public class Executor extends BaseThread
 		list.clear();
 	}
 }
+
+
 	
 	

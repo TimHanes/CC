@@ -90,7 +90,7 @@ private Cursor getCursorBySourse(String sourse) {
 	}
 	private Cursor getCursorSourses() {
 		Cursor cursor = sdb.query(DbHelper.DATABASE_TABLE, null, null, null, null,
-				null, null);
+				null, DbHelper.SOURSE);
 		return cursor;
 	}	
 	private Duplicates getDuplicatesByCursor(Cursor cursor) {

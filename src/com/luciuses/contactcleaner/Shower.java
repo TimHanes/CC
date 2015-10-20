@@ -15,7 +15,7 @@ public class Shower {
 	
 	public Shower(Executor executor) {
 		this.executor = executor;
-		this.contactsProvider = new ProviderContactsDb(executor.getMessageHandler());
+		this.contactsProvider = executor.getContactsProvider();
 	}
 
 	public void ShowList(String[] sourses) {

@@ -1,5 +1,7 @@
 package com.luciuses.contactcleaner;
 
+import java.util.List;
+
 import com.luciuses.contactcleaner.components.StepType;
 import com.luciuses.contactcleaner.screens.Popup;
 
@@ -43,6 +45,7 @@ import android.widget.*;
 		
 		public void Init (Activity activity, Context context)
 		{
+			
 			this.activity = activity;			
 			this.context = context;
 			popup = new Popup(activity);
@@ -80,6 +83,8 @@ import android.widget.*;
 			};
 			buttonReScan.setOnClickListener(buttonReScanListener);
 			buttonContinue.setOnClickListener(buttonContinueListener);
-		}											
+		}	
+		
+		
 	}
 
