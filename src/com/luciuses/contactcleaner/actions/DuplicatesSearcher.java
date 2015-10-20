@@ -15,12 +15,15 @@ public class DuplicatesSearcher {
 	private ProviderDuplicatesDb dbProvider;
 	private Options options;
 	private ArrayList<String> list;
+	private String where;
 	
-	public DuplicatesSearcher( Executor executor) {					
+	public DuplicatesSearcher( Executor executor, String where) {	
+		this.where = where;
 		contactsProvider = executor.getContactsProvider();
 		dbProvider = executor.getDbProvider();
 		list = executor.getList();
-		this.options = new Options();		
+		this.options = new Options();	
+		contactsProvider.setAutoDel(options.isAutoDel());
 	}
 	
 	public void Search(Contact contact) {
@@ -29,12 +32,25 @@ public class DuplicatesSearcher {
 	
 	private void SearchDupl(Contact contact) {
 		if (options.isByName()) {
-			CheckByName(contact.getName()); 
+			CheckByName(contact); 
 		}
 
 		if (options.isByPhone()) {
-			CheckByPhones(contact.getPhones());
+			CheckByPhones(contact);
 		}				
+	}
+
+	@SuppressLint("DefaultLocale")
+	private void CheckByName(Contact contact) {
+		String name = contact.getName().toUpperCase();
+		if(!list.contains(name)){			
+		String[] duplicatesId = contactsProvider.getContactsIdByName(name);
+		if(duplicatesId == null)
+			return;						
+		list.add(name);
+		Duplicates duplicates = new Duplicates(SourseType.Name, name, where, duplicatesId);
+		dbProvider.Save(duplicates);
+		}
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -43,30 +59,34 @@ public class DuplicatesSearcher {
 		if(!list.contains(name)){			
 		String[] duplicatesId = contactsProvider.getContactsIdByName(name);
 		if(duplicatesId == null)
-			return;
+			return;		
 		list.add(name);
-		Duplicates duplicates = new Duplicates(SourseType.Name, name, duplicatesId);
+		Duplicates duplicates = new Duplicates(SourseType.Name, name, where, duplicatesId);
 		dbProvider.Save(duplicates);
 		}
 	}
 	
-	private void CheckByPhones(String[] phones) {
-		if(phones!= null)
-		for (int p = 0; p < phones.length; p++) {
-			CheckByPhone(phones[p]);			
+	private void CheckByPhones(Contact contact) {
+		if(contact.getPhones()!= null)
+		for (int p = 0; p < contact.getPhones().length; p++) {
+			String[] duplicatesId = CheckByPhone(contact.getPhones()[p]);
+			if(duplicatesId != null){					
+				list.add(contact.getPhones()[p]);
+				Duplicates duplicates = new Duplicates(SourseType.Phone, contact.getPhones()[p], where, duplicatesId);
+				dbProvider.Save(duplicates);
+			}			
 		}
 	}
 
-	private void CheckByPhone(String phone) {
+	private String[] CheckByPhone(String phone) {
 
 		if(!isContainsList(phone)){			
 		String[] duplicatesId = contactsProvider.getContactsIdByPhone(phone);
 		if(duplicatesId == null) 
-			return;
-		list.add(phone);
-		Duplicates duplicates = new Duplicates(SourseType.Phone, phone, duplicatesId);
-		dbProvider.Save(duplicates);
+			return null;
+		return duplicatesId;
 		}
+		return null;
 	}
 
 	private boolean isContainsList(String phone) {

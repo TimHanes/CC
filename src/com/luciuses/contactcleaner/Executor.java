@@ -181,17 +181,14 @@ public class Executor extends BaseThread
 		Message.obtain(messageHandler, MessageType.SetButtonsApp.ordinal()).sendToTarget();		
 	}
 	private void UpdateContact(Duplicates duplicates) {
-		DuplicatesSearcher searcher = new DuplicatesSearcher(this);
+		DuplicatesSearcher searcher = new DuplicatesSearcher(this, duplicates.getWhere() );
 		searcher.Search(duplicates.getType(), duplicates.getSourse());
 	}
-	private void Deleted(String id) {
-		Contact contact = contactsProvider.getContactById(id);
+	private void Deleted(String id) {		
 		list.remove(duplicates.getSourse());
-		dbProvider.ContactDelete(duplicates.getSourse());					
-		contactsProvider.DeleteContact(id);	
-		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Deleted: " 
-		+ new Functions().ContactToString(contact)).sendToTarget();
-			
+		dbProvider.ContactDelete(duplicates.getSourse());
+		contactsProvider.setWhere(duplicates.getWhere());
+		contactsProvider.DeleteContact(id);			
 	}
 	public void CleanList() {
 		list.clear();

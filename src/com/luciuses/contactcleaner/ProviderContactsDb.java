@@ -21,17 +21,17 @@ import android.os.Message;
 public class ProviderContactsDb { 
 	private Context context = App.Instance().getContext();
 	MessageHandler messageHandler;
-	private CursorModel where;
+	private String where;
+	private boolean isAutoDel;
 	
 
 	public ProviderContactsDb(MessageHandler messageHandler) {
 		
-		this.messageHandler = messageHandler;
-		this.where = new Where().getPhoneUri();
+		this.messageHandler = messageHandler;		
 	}
 
-	public void setWhere(CursorModel where) {
-		this.where = where;
+	public void setWhere(String string) {
+		this.where = string;
 	}	
 
 	public int getCountAllContacts() {
@@ -121,6 +121,10 @@ public class ProviderContactsDb {
 			} catch (Exception e) {
 				
 			}
+			if(isAutoDel && (getContactPhone(id)==null | getContactName(id) == null)){
+				DeleteContact(id);
+				continue;
+			}			
 			if(id!= null && !contactId.contains(id)) contactId.add(id);
 		}
 		if(contactId.size()<2)return null;
@@ -131,6 +135,9 @@ public class ProviderContactsDb {
 
 
 	public void DeleteContact(String id) {
+		Contact contact = getContactById(id);
+		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Deleted: " 
+				+ new Functions().ContactToString(contact)).sendToTarget();
 		Uri uri = getUriByContactId(id);
 		ContactDelete(uri);	
 	}
@@ -140,6 +147,8 @@ public class ProviderContactsDb {
 		Cursor cursor = getAllContactCursor();
 		cursor.moveToPosition(position);		
 		String id = getIdByCursor(cursor);
+		if(id == null) 
+			return null;
 		String name = getContactName(id);
 		String[] phones = getContactPhone(id);
 		RegionType region = getRegion(id);
@@ -150,11 +159,11 @@ public class ProviderContactsDb {
 	
 	private Cursor getAllContactCursor() {
 			
-			String where = this.where.getWhere();
-			String[] selectionArgs = this.where.getSelectionArgs();	
+			String where = this.where;
+			String[] selectionArgs = null;	
 		
-		Uri uri = this.where.getUri();
-	    String[] projection = this.where.getProjection();	   
+		Uri uri = ContactsContract.Contacts.CONTENT_URI;
+	    String[] projection = null;	   
 	    String sortOrder = null;
 	    Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);	 
 		
@@ -164,7 +173,7 @@ public class ProviderContactsDb {
 		
 		Cursor cur;
 		try {
-			cur = context.getContentResolver().query(where.getUri(), null,
+			cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,
 					(ContactsContract.Contacts._ID + " LIKE '" + id + "'"), null, null);
 		} catch (Exception e) {
 			return null;
@@ -176,16 +185,16 @@ public class ProviderContactsDb {
 	private Cursor getCursorByName(String selname, boolean ignorecase) {
 		if(selname == null) return null;
 		selname = selname.replace("'", "''").toUpperCase();		
-		Cursor cur = context.getContentResolver().query(where.getUri(), null,
-				"(UPPER(" + ContactsContract.Contacts.DISPLAY_NAME + ") LIKE '" + selname + "') AND (" + where.getWhere()+")",
-						this.where.getSelectionArgs(), null);
+		Cursor cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,
+				"(UPPER(" + ContactsContract.Contacts.DISPLAY_NAME + ") LIKE '" + selname + "') AND (" + where +")",
+						null, null);
 		return cur;
 	}
 	private Cursor getCursorByPhone(String sourcePhoneNumber) {
 		
 		String phoneNumber = PhoneNumberUtils.stripSeparators(sourcePhoneNumber);
 		String[] projection = null;
-		String selection = "PHONE_NUMBERS_EQUAL(" + Phone.NUMBER + ", ?) AND (" + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "') AND (" + where.getWhere()+")";
+		String selection = "PHONE_NUMBERS_EQUAL(" + Phone.NUMBER + ", ?) AND (" + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "') AND (" + where +")";
 		String[] selectionArgs = new String[]{phoneNumber};
 		Cursor cursor = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);				
 		return cursor;
@@ -204,6 +213,10 @@ public class ProviderContactsDb {
 		cursor.moveToFirst();
 		for(int i = 0; i < cursor.getCount(); i++, cursor.moveToNext()){
 			String id = getIdByCursor(cursor);
+			if(isAutoDel && (getContactPhone(id)==null | getContactName(id) == null)){
+				DeleteContact(id);
+				continue;
+			}
 			if(id!=null)
 				contactsId.add(id);
 		}
@@ -249,7 +262,7 @@ public class ProviderContactsDb {
 		return cur;
 	}
 	
-	private String[] getContactPhone(String id) {
+	public String[] getContactPhone(String id) {
 		 ArrayList<String> phones = new ArrayList<String>();
 		 
 		 Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -282,8 +295,21 @@ public class ProviderContactsDb {
 	    Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);	    
 	    if( result == null) return null;
 	    result.moveToFirst();	    	
-	    	String name = result.getString(result.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));	     	
+	    	String name = null;
+			try {
+				name = result.getString(result.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+			} catch (Exception e) {
+				return null;
+			}	     	
 	    result.close();	 
 	    return name;
+	}
+
+	public boolean isAutoDel() {
+		return isAutoDel;
+	}
+
+	public void setAutoDel(boolean isAutoDel) {
+		this.isAutoDel = isAutoDel;
 	}
 }

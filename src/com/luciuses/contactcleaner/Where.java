@@ -12,19 +12,6 @@ import android.widget.*;
 
 	public class Where
 	{
-		private CursorModel phoneCursor = new CursorModel(ContactsContract.Contacts.CONTENT_URI,
-				null,
-				"indicate_phone_or_sim_contact",
-				new String[]{"-1"}, null);
-		private CursorModel Sim1Cursor = new CursorModel(ContactsContract.Contacts.CONTENT_URI,
-				null,
-				"indicate_phone_or_sim_contact",
-				new String[]{"1"}, null);
-		private CursorModel Sim2Cursor = new CursorModel(ContactsContract.Contacts.CONTENT_URI,
-				null,
-				"indicate_phone_or_sim_contact",
-				new String[]{"2"}, null);
-		
 		private boolean phone ;
 		private boolean Sim1 ;
 		private boolean Sim2 ;
@@ -39,11 +26,13 @@ import android.widget.*;
 			setSim2(sim2.isChecked());
 		}	
 		
-		public CursorModel getWhere(){
+		public String getWhere(){
 			ArrayList<String> parametrs = new ArrayList<String>();
 			if(phone) parametrs.add("-1");
 			if(Sim1) parametrs.add("1");
 			if(Sim2) parametrs.add("2");
+			if(parametrs.isEmpty())
+				return null;
 			String[] selectionArgs = new String[parametrs.size()];
 			parametrs.toArray(selectionArgs);
 			
@@ -51,10 +40,7 @@ import android.widget.*;
 			for(int i = 0; i < selectionArgs.length; i++)
 			    selection += "indicate_phone_or_sim_contact = '" + selectionArgs[i] + "' OR ";
 			selection = selection.substring(0, selection.length() - 4);
-			return new CursorModel(ContactsContract.Contacts.CONTENT_URI,
-					null,
-					selection,
-					null, null);	
+			return 	selection;	
 		}
 		
 		public boolean isPhone() {
@@ -78,30 +64,6 @@ import android.widget.*;
 		
 		public boolean isChoosed(){
 			return phone|Sim1|Sim2;
-		}
-
-		public CursorModel getPhoneUri() {
-			return phoneCursor;
-		}
-
-		public void setPhoneUri(CursorModel phoneUri) {
-			this.phoneCursor = phoneUri;
-		}
-
-		public CursorModel getSim1Uri() {
-			return Sim1Cursor;
-		}
-
-		public void setSim1Uri(CursorModel sim1Uri) {
-			Sim1Cursor = sim1Uri;
-		}
-
-		public CursorModel getSim2Uri() {
-			return Sim2Cursor;
-		}
-
-		public void setSim2Uri(CursorModel sim2Uri) {
-			Sim2Cursor = sim2Uri;
 		}
 	}
 

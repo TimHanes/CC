@@ -21,7 +21,7 @@ public class ProviderDuplicatesDb{
 	private DbHelper dbHelper;
 	
 	public ProviderDuplicatesDb(Context context) {
-		dbHelper = new DbHelper(context, "database3.db", null, 1);
+		dbHelper = new DbHelper(context, "database7.db", null, 1);
 		sdb = dbHelper.getReadableDatabase();
 	}
 
@@ -37,16 +37,6 @@ public class ProviderDuplicatesDb{
 		Duplicates duplicatesCont = getDuplicatesByCursor(cursor);		
 		return duplicatesCont;
 	}
-
-
-	public Duplicates getBySourses(String sourse) {
-		Cursor cursor = getCursorBySourse(sourse);
-		cursor.moveToFirst();
-		Duplicates duplicatesCont = getDuplicatesByCursor(cursor);
-		cursor.close();
-		return duplicatesCont;
-	}
-
 
 	public void Save(Duplicates duplicates) {
 		ContentValues newValues = PutInContent(duplicates);
@@ -69,8 +59,7 @@ public class ProviderDuplicatesDb{
 	
 private Cursor getCursorBySourse(String sourse) {
 		
-		Cursor cursor = sdb.query(DbHelper.DATABASE_TABLE,
-				new String[] { DbHelper._ID, DbHelper.SOURSE_TYPE, DbHelper.SOURSE, DbHelper.ID_DUBLICATES},
+		Cursor cursor = sdb.query(DbHelper.DATABASE_TABLE, null,
 				DbHelper.SOURSE+" = ?", new String[] { sourse }, null, null, null);
 		return cursor;
 	}
@@ -94,18 +83,21 @@ private Cursor getCursorBySourse(String sourse) {
 		return cursor;
 	}	
 	private Duplicates getDuplicatesByCursor(Cursor cursor) {
+		
 		String idDuplicatesStr;
 		String sourse;
 		SourseType type;
+		String where;
 		try {
-			idDuplicatesStr = cursor.getString(cursor.getColumnIndex(DbHelper.ID_DUBLICATES));
-			sourse = cursor.getString(cursor.getColumnIndex(DbHelper.SOURSE));
 			type = SourseType.values()[cursor.getInt(cursor.getColumnIndex(DbHelper.SOURSE_TYPE))];
+			sourse = cursor.getString(cursor.getColumnIndex(DbHelper.SOURSE));
+			where = cursor.getString(cursor.getColumnIndex(DbHelper.REGION));
+			idDuplicatesStr = cursor.getString(cursor.getColumnIndex(DbHelper.ID_DUBLICATES));
 		} catch (Exception e) {
 			return null;
 		}		
 		String[] idDuplicates = idDuplicatesStr.split(" ");
-		return new Duplicates(type, sourse, idDuplicates);
+		return new Duplicates(type, sourse, where, idDuplicates );
 	}
 
 	private String getSourseByCursor(Cursor cursor) {
@@ -119,8 +111,9 @@ private Cursor getCursorBySourse(String sourse) {
 	}
 	private ContentValues PutInContent(Duplicates duplicates) {
 		ContentValues newValues = new ContentValues();
-		newValues.put(DbHelper.SOURSE, duplicates.getSourse());
 		newValues.put(DbHelper.SOURSE_TYPE, duplicates.getType().ordinal());
+		newValues.put(DbHelper.SOURSE, duplicates.getSourse());
+		newValues.put(DbHelper.REGION, duplicates.getWhere());		
 		String[] idDubls = duplicates.getIdDuplicates();
 		if (idDubls != null) {			
 			String idDubslStr = TextUtils.join(" ", idDubls);				
@@ -128,14 +121,15 @@ private Cursor getCursorBySourse(String sourse) {
 		}
 		return newValues;
 	}
-	private Integer getIdByCursor(Cursor cursor) {		     
+	private Integer getIdByCursor(Cursor cursor) {
+		Integer id;
         int idColIndex;
 		try {
 			idColIndex = cursor.getColumnIndex(DbHelper._ID);
+			id = cursor.getInt(idColIndex);
 		} catch (Exception e) {
 			return null;
-		}
-		Integer id = cursor.getInt(idColIndex);     		
+		}		     		
 		return id;
 	}
 }

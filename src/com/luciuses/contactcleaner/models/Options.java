@@ -10,6 +10,7 @@ import android.widget.*;
 	{
 		private boolean ByName ;
 		private boolean ByPhone ;
+		private boolean autoDel;
 		
 		public Options()
 		{
@@ -17,6 +18,8 @@ import android.widget.*;
 			CheckBox Byphone=(CheckBox)App.Instance().getActivity().findViewById(R.id.byphone);
 			setByName(Byname.isChecked());
 			setByPhone(Byphone.isChecked());
+			CheckBox AutoDel=(CheckBox)App.Instance().getActivity().findViewById(R.id.autodel);
+			setAutoDel(AutoDel.isChecked());
 		}	
 		
 		public boolean isByName() {
@@ -33,6 +36,14 @@ import android.widget.*;
 		}		
 		public boolean isChoosed(){
 			return ByName|ByPhone;
+		}
+
+		public boolean isAutoDel() {
+			return autoDel;
+		}
+
+		public void setAutoDel(boolean autoDel) {
+			this.autoDel = autoDel;
 		}		
 	}
 

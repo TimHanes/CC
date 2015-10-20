@@ -13,6 +13,7 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
  
     public static final String SOURSE_TYPE = "sourseType";
     public static final String SOURSE = "sourse";
+    public static final String REGION = "region";
     public static final String ID_DUBLICATES = "iDDublicates";
  
     private static final String DATABASE_NAME = "DbDublicates";
@@ -22,6 +23,7 @@ public class DbHelper extends SQLiteOpenHelper implements BaseColumns{
             + DATABASE_TABLE + " (" + BaseColumns._ID
             + " integer primary key autoincrement, " + SOURSE_TYPE
             + " integer not null, " + SOURSE
+            + " text not null, "+ REGION
             + " text not null, " + ID_DUBLICATES + " text not null);";
     
     public DbHelper(Context context) {

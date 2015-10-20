@@ -17,12 +17,12 @@ public class Scaner {
 		this.executor = executor;				
 	}
 
-	public void Scan(CursorModel where) {
+	public void Scan(String where) {
 		
 		executor.getContactsProvider().setWhere(where);		
 		executor.setFinish(false);
 		int contactCount = executor.getContactsProvider().getCountAllContacts();
-		duplicatesSearcher = new DuplicatesSearcher(executor);		
+		duplicatesSearcher = new DuplicatesSearcher(executor, where);		
 		for (int position = 0; position < contactCount; position++) {
 			Contact contact = executor.getContactsProvider().getContactByPosition(position);
 			if(contact == null)
