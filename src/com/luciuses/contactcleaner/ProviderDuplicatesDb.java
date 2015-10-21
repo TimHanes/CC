@@ -43,7 +43,7 @@ public class ProviderDuplicatesDb{
 		sdb.insert(DbHelper.DATABASE_TABLE, null, newValues);		
 	}
 
-	public int ContactDelete(String sourse) {
+	public int DuplicatesDelete(String sourse) {
 		int count = 0;
 		Cursor cursor = getCursorBySourse(sourse);
 		cursor.moveToFirst();
@@ -131,5 +131,12 @@ private Cursor getCursorBySourse(String sourse) {
 			return null;
 		}		     		
 		return id;
+	}
+
+
+	public Duplicates getDuplicatesBySourse(String sourse) {
+		Cursor cursor = getCursorBySourse(sourse);
+		Duplicates duplicates = getDuplicatesByCursor(cursor);
+		return duplicates;
 	}
 }

@@ -11,7 +11,7 @@ import android.text.TextUtils;
 		String phonesStr = "";
 		if(contact.getPhones() != null)
 			phonesStr = TextUtils.join("\r\n", contact.getPhones());		
-		return "ID:" + contact.getId() + "  " + contact.getRegion().name() + "\r\n" + "Name:" +contact.getName() + "\r\n" + "Phones:" + phonesStr;		
+		return "ID:" + contact.getId() + "  " + contact.getRegion().name() + "\r\n" + "Name:" +contact.getName() + "\r\n" + "Phones:" + phonesStr + "\r\n";		
 	}
 	
 	

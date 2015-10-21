@@ -45,6 +45,8 @@ public class ProviderContactsDb {
 	public Contact getContactById(String id) {		
 		String[] phones = getContactPhone(id);
 		String name = getContactName(id);
+		if(phones == null & name == null) 
+			return null;
 		RegionType region = getRegion(id);
 		Contact contact = new Contact(id, name, phones, region);
 		return contact;
@@ -52,7 +54,7 @@ public class ProviderContactsDb {
 	
 	private RegionType getRegion(String id) {
 		Uri uri = ContactsContract.Contacts.CONTENT_URI;
-	    String[] projection = null;
+	    String[] projection = new String[] {ContactsContract.Contacts._ID, "indicate_phone_or_sim_contact"};
 	    String where = ContactsContract.Contacts._ID +" = ?";
 	    String[] selectionArgs = new String[] { id };
 	    String sortOrder = null;
@@ -66,30 +68,6 @@ public class ProviderContactsDb {
 	    return RegionType.Phone;	
 	}
 
-	public String getNameByUri(Uri uri) {
-		Cursor cur = getCursorByUri(uri);
-		cur.moveToFirst();
-		String name = getNameByCursor(cur);
-		cur.close();
-		return name;
-	}
-	
-	private Cursor getCursorByUri(Uri uri) {
-		Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
-		return cur;
-	}
-	
-	private String getNameByCursor(Cursor cur) {
-		
-		String name;
-		try {
-			name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-		} catch (Exception e) {		
-			return null;
-		}
-		return name;
-	}
-	
 	public String[] getContactsIdByName(String name) {
 		Cursor cursor = getCursorByName(name, true);
 		if(cursor.getCount() < 2) 
@@ -180,29 +158,35 @@ public class ProviderContactsDb {
 		}		
 		return cur;
 	}
-	
-	@SuppressLint("DefaultLocale")
+		
 	private Cursor getCursorByName(String selname, boolean ignorecase) {
 		if(selname == null) return null;
-		selname = selname.replace("'", "''").toUpperCase();		
-		Cursor cur = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,
-				"(UPPER(" + ContactsContract.Contacts.DISPLAY_NAME + ") LIKE '" + selname + "') AND (" + where +")",
-						null, null);
-		return cur;
+		selname = selname.replace("'", "''");	
+		Uri uri = ContactsContract.Contacts.CONTENT_URI;
+		String[] projection = new String[] {ContactsContract.Contacts.DISPLAY_NAME, "indicate_phone_or_sim_contact", ContactsContract.Contacts._ID };
+		String where = "(UPPER(" + ContactsContract.Contacts.DISPLAY_NAME + ") LIKE UPPER(?)) AND (" + this.where +")";		
+		String[] selectionArgs = new String[]{"%"+selname+"%"};
+		String sortOrder = null;
+		Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);			
+		return result;
 	}
+	
 	private Cursor getCursorByPhone(String sourcePhoneNumber) {
 		
 		String phoneNumber = PhoneNumberUtils.stripSeparators(sourcePhoneNumber);
-		String[] projection = null;
-		String selection = "PHONE_NUMBERS_EQUAL(" + Phone.NUMBER + ", ?) AND (" + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "') AND (" + where +")";
+		Uri uri = ContactsContract.Data.CONTENT_URI;
+		String[] projection = new String[] {ContactsContract.CommonDataKinds.Phone.CONTACT_ID, "indicate_phone_or_sim_contact", Phone.NUMBER, Data.MIMETYPE };	
 		String[] selectionArgs = new String[]{phoneNumber};
-		Cursor cursor = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);				
-		return cursor;
+		String sortOrder = null;
+		String where = "PHONE_NUMBERS_EQUAL(" + Phone.NUMBER + ", ?) AND (" + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "') AND (" + this.where +")";		
+		Cursor result = managedQuery(uri, projection, where, selectionArgs, sortOrder);
+		return result;
 	}
 	private String  getIdByCursor(Cursor cursor) {
 		String id = null;
-		try {
+		try {			
 			id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+			
 		} catch (Exception e) {
 			return null;
 		}
@@ -263,11 +247,10 @@ public class ProviderContactsDb {
 	}
 	
 	public String[] getContactPhone(String id) {
-		 ArrayList<String> phones = new ArrayList<String>();
-		 
-		 Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 		
-	    String[] projection = null;	
+		ArrayList<String> phones = new ArrayList<String>();		 
+		Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;		
+	    String[] projection = new String[] {ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER};;	
 	    String where = ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?";
 	    String[] selectionArgs = new String[] { id };
 	    String sortOrder = null;
@@ -288,7 +271,7 @@ public class ProviderContactsDb {
 	
 	private String getContactName(String id) {
 	    Uri uri = ContactsContract.Contacts.CONTENT_URI;
-	    String[] projection = null;
+	    String[] projection = new String[] {ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME};	
 	    String where = ContactsContract.Contacts._ID +" = ?";
 	    String[] selectionArgs = new String[] { id };
 	    String sortOrder = null;

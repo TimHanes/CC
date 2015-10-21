@@ -124,9 +124,9 @@ public class Executor extends BaseThread
 				super.run();
 				break;
 			case ShowDublicates:
-				duplicates = dbProvider.getByPosition(clickPosition);
-				shower.ShowList(duplicates);
 				this.Pause();
+				duplicates = dbProvider.getByPosition(clickPosition);
+				shower.ShowList(duplicates);				
 				super.run();
 				break;
 			case ShowChooseAction:
@@ -142,7 +142,9 @@ public class Executor extends BaseThread
 					}
 				setStep(StepType.ShowList);
 				break;	
-			case Finish:	
+			case Finish:
+				
+				Message.obtain(messageHandler, MessageType.Finally.ordinal()).sendToTarget();
 				Message.obtain(messageHandler, MessageType.ShowToast.ordinal(),
 						"End processing!").sendToTarget();
 				setStep(StepType.Start);
@@ -186,7 +188,7 @@ public class Executor extends BaseThread
 	}
 	private void Deleted(String id) {		
 		list.remove(duplicates.getSourse());
-		dbProvider.ContactDelete(duplicates.getSourse());
+		dbProvider.DuplicatesDelete(duplicates.getSourse());
 		contactsProvider.setWhere(duplicates.getWhere());
 		contactsProvider.DeleteContact(id);			
 	}

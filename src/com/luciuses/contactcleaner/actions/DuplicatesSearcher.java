@@ -3,10 +3,13 @@ package com.luciuses.contactcleaner.actions;
 import java.util.ArrayList;
 
 import com.luciuses.contactcleaner.*;
+import com.luciuses.contactcleaner.Functions.Functions;
 import com.luciuses.contactcleaner.components.MessageType;
+import com.luciuses.contactcleaner.hendlers.MessageHandler;
 import com.luciuses.contactcleaner.models.Contact;
 import com.luciuses.contactcleaner.models.Options;
 import android.annotation.SuppressLint;
+import android.os.Message;
 import android.telephony.PhoneNumberUtils;
 
 public class DuplicatesSearcher {
@@ -16,8 +19,10 @@ public class DuplicatesSearcher {
 	private Options options;
 	private ArrayList<String> list;
 	private String where;
+	private MessageHandler messageHandler;
 	
-	public DuplicatesSearcher( Executor executor, String where) {	
+	public DuplicatesSearcher( Executor executor, String where) {
+		messageHandler = executor.getMessageHandler();
 		this.where = where;
 		contactsProvider = executor.getContactsProvider();
 		dbProvider = executor.getDbProvider();
@@ -40,53 +45,47 @@ public class DuplicatesSearcher {
 		}				
 	}
 
-	@SuppressLint("DefaultLocale")
 	private void CheckByName(Contact contact) {
-		String name = contact.getName().toUpperCase();
-		if(!list.contains(name)){			
-		String[] duplicatesId = contactsProvider.getContactsIdByName(name);
+		if(!list.contains(contact.getName())){			
+		String[] duplicatesId = contactsProvider.getContactsIdByName(contact.getName());
 		if(duplicatesId == null)
 			return;						
-		list.add(name);
-		Duplicates duplicates = new Duplicates(SourseType.Name, name, where, duplicatesId);
-		dbProvider.Save(duplicates);
+		AddtoListDb(SourseType.Name, contact.getName(), duplicatesId);
 		}
 	}
 
-	@SuppressLint("DefaultLocale")
-	private void CheckByName(String name) {
-		name = name.toUpperCase();
+	private void CheckByName(String name) {		
 		if(!list.contains(name)){			
 		String[] duplicatesId = contactsProvider.getContactsIdByName(name);
 		if(duplicatesId == null)
 			return;		
-		list.add(name);
-		Duplicates duplicates = new Duplicates(SourseType.Name, name, where, duplicatesId);
-		dbProvider.Save(duplicates);
+		AddtoListDb(SourseType.Name ,name, duplicatesId);
 		}
 	}
 	
 	private void CheckByPhones(Contact contact) {
 		if(contact.getPhones()!= null)
 		for (int p = 0; p < contact.getPhones().length; p++) {
-			String[] duplicatesId = CheckByPhone(contact.getPhones()[p]);
-			if(duplicatesId != null){					
-				list.add(contact.getPhones()[p]);
-				Duplicates duplicates = new Duplicates(SourseType.Phone, contact.getPhones()[p], where, duplicatesId);
-				dbProvider.Save(duplicates);
-			}			
+			CheckByPhone(contact.getPhones()[p]);						
 		}
 	}
 
-	private String[] CheckByPhone(String phone) {
+	private void CheckByPhone(String phone) {
 
 		if(!isContainsList(phone)){			
-		String[] duplicatesId = contactsProvider.getContactsIdByPhone(phone);
-		if(duplicatesId == null) 
-			return null;
-		return duplicatesId;
-		}
-		return null;
+			String[] duplicatesId = contactsProvider.getContactsIdByPhone(phone);
+			if(duplicatesId != null){	
+				AddtoListDb(SourseType.Phone, phone, duplicatesId);				
+			}	
+		}		
+	}
+
+	private void AddtoListDb(SourseType type, String sourse, String[] duplicatesId) {
+		Message.obtain(messageHandler, MessageType.AddToLogView.ordinal(), "Fond duplicates by: " 
+				+ sourse + "\r\n").sendToTarget();
+		list.add(sourse);
+		Duplicates duplicates = new Duplicates(type, sourse, where, duplicatesId);
+		dbProvider.Save(duplicates);
 	}
 
 	private boolean isContainsList(String phone) {

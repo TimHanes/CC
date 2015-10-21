@@ -12,14 +12,12 @@ import android.widget.AdapterView.*;
 
 public class MessageHandler extends Handler {
 	
-	private TextView _logView;
+	
 	private Executor Executor;
 	private Parcelable state;
 
 	public MessageHandler(Executor executor) {
-		this.Executor = executor;
-		TextView logView = (TextView) App.Instance().getActivity().findViewById(R.id.tv);
-		_logView = logView;
+		this.Executor = executor;		
 	}
 
 	public void handleMessage(Message msg) {
@@ -138,6 +136,6 @@ public class MessageHandler extends Handler {
 	}
 
 	private void AddToLogView(Message msg) {
-		_logView.append(msg.obj.toString());
+		App.Instance().getLogView().append(msg.obj.toString());
 	}
 }

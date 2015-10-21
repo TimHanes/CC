@@ -32,14 +32,12 @@ import android.widget.*;
 			if(Sim1) parametrs.add("1");
 			if(Sim2) parametrs.add("2");
 			if(parametrs.isEmpty())
-				return null;
-			String[] selectionArgs = new String[parametrs.size()];
-			parametrs.toArray(selectionArgs);
-			
-			String selection = "";
-			for(int i = 0; i < selectionArgs.length; i++)
-			    selection += "indicate_phone_or_sim_contact = '" + selectionArgs[i] + "' OR ";
-			selection = selection.substring(0, selection.length() - 4);
+				return null;			
+			String selection = "indicate_phone_or_sim_contact IN (";
+			for(int i = 0; i < parametrs.size(); i++)
+			    selection += "'" + parametrs.get(i) + "', ";
+			selection = selection.substring(0, selection.length() - 2);
+			selection += ")";
 			return 	selection;	
 		}
 		

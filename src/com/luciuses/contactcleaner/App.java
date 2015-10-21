@@ -18,6 +18,7 @@ import android.widget.*;
 		private Context context;			
 		private ProviderDuplicatesDb dbProvider;
 		private Activity activity;
+		private TextView logView;
 	
 		private App() 
 		{}
@@ -52,6 +53,7 @@ import android.widget.*;
 			dbProvider = new ProviderDuplicatesDb(context);						
 			Button buttonReScan = (Button)activity.findViewById(R.id.btnStart);			
 			Button buttonContinue = (Button)activity.findViewById(R.id.btnContinue);
+			setLogView((TextView) activity.findViewById(R.id.tv));			
 			if(dbProvider.getCountAllSourses() > 0){
 				buttonReScan.setText("RESCAN");
 				buttonContinue.setVisibility(View.VISIBLE);
@@ -83,6 +85,14 @@ import android.widget.*;
 			};
 			buttonReScan.setOnClickListener(buttonReScanListener);
 			buttonContinue.setOnClickListener(buttonContinueListener);
+		}
+
+		public TextView getLogView() {
+			return logView;
+		}
+
+		public void setLogView(TextView logView) {
+			this.logView = logView;
 		}	
 		
 		
